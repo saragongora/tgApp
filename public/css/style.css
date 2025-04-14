@@ -1,39 +1,81 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
-  }
-  
-  .login-container {
-    background: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    width: 300px;
-  }
-  
+  font-family: 'Roboto', sans-serif;
+  background-color: #f2f2f2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.header {
+  background-color: #990000;
+  padding: 15px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.header a {
+  margin-left: 60px;
+}
+
+.sub-header {
+  background-color: #666;
+  color: white;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: bold; /* negrito */
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: 60px; /* igual ao margin-left do logo */
+  box-sizing: border-box;
+}
+
+
+
+.login-container {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
   input {
-    display: block;
     width: 100%;
     margin-bottom: 15px;
     padding: 10px;
     border-radius: 4px;
     border: 1px solid #ccc;
+    box-sizing: border-box; 
   }
   
+  
   button {
-    padding: 10px 20px;
-    background-color: #007bff;
+    padding: 7px 16px;
+    background-color: #990000;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
   }
   
+  .button-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end; /* Alinha o botão à direita */
+  }
+  
+
   .error {
     color: red;
     margin-bottom: 10px;
