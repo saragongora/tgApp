@@ -61,8 +61,6 @@ app.get('/painel', (req, res) => {
   });  
 
 
-
-
 // Iniciar servidor
 const PORT = 3000;
 app.listen(PORT, () => {

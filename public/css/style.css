@@ -10,15 +10,35 @@ body {
 
 .header {
   background-color: #990000;
-  padding: 15px;
+  padding: 15px 60px;
   width: 100%;
   display: flex;
   align-items: center;
+  justify-content: space-between; /* separa logo de botões */
+  box-sizing: border-box;
 }
 
-.header a {
-  margin-left: 60px;
+.header-buttons {
+  display: flex;
+  gap: 10px;
 }
+
+.btn-header {
+  background-color: white;
+  color: #990000;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: inline-flex; /* <- adiciona isso */
+  align-items: center;
+  margin: 0; /* <- garante que não tem margem sobrando */
+  box-sizing: border-box; /* garante que padding não ultrapassa */
+}
+
+
 
 .sub-header {
   background-color: #666;
@@ -32,7 +52,6 @@ body {
   padding-left: 60px; /* igual ao margin-left do logo */
   box-sizing: border-box;
 }
-
 
 
 .login-container {
@@ -81,3 +100,37 @@ body {
     margin-bottom: 10px;
   }
   
+
+  /* Responsividade para telas menores */
+@media (max-width: 600px) {
+  .header {
+    padding: 15px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header a {
+    margin-left: 0;
+  }
+
+  .sub-header {
+    padding-left: 20px;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .login-container {
+    margin-top: 120px;
+    padding: 20px;
+    width: 75%;
+    max-width: none;
+  }
+
+  input, button {
+    font-size: 16px;
+  }
+
+  .button-wrapper {
+    justify-content: flex-end;
+  }
+}
