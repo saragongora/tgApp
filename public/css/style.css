@@ -14,7 +14,8 @@ body {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* separa logo de botões */
+  justify-content: space-between;
+  /* separa logo de botões */
   box-sizing: border-box;
 }
 
@@ -32,33 +33,35 @@ body {
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  display: inline-flex; /* <- adiciona isso */
+  display: inline-flex;
+  /* <- adiciona isso */
   align-items: center;
-  margin: 0; /* <- garante que não tem margem sobrando */
-  box-sizing: border-box; /* garante que padding não ultrapassa */
+  margin: 0;
+  /* <- garante que não tem margem sobrando */
+  box-sizing: border-box;
+  /* garante que padding não ultrapassa */
 }
-
-
 
 .sub-header {
   background-color: #666;
   color: white;
   padding: 10px 0;
   font-size: 14px;
-  font-weight: bold; /* negrito */
+  font-weight: bold;
+  /* negrito */
   width: 100%;
   display: flex;
   align-items: center;
-  padding-left: 60px; /* igual ao margin-left do logo */
+  padding-left: 60px;
+  /* igual ao margin-left do logo */
   box-sizing: border-box;
 }
-
 
 .login-container {
   background: white;
   padding: 30px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 250px;
   display: flex;
@@ -69,39 +72,40 @@ body {
   margin-bottom: auto;
 }
 
-  input {
-    width: 100%;
-    margin-bottom: 15px;
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    box-sizing: border-box; 
-  }
-  
-  
-  button {
-    padding: 7px 16px;
-    background-color: #990000;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .button-wrapper {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end; /* Alinha o botão à direita */
-  }
-  
+input {
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
 
-  .error {
-    color: red;
-    margin-bottom: 10px;
-  }
-  
 
-  /* Responsividade para telas menores */
+button {
+  padding: 7px 16px;
+  background-color: #990000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  /* Alinha o botão à direita */
+}
+
+
+.error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+
+/* Responsividade para telas menores */
 @media (max-width: 600px) {
   .header {
     padding: 15px 20px;
@@ -126,7 +130,8 @@ body {
     max-width: none;
   }
 
-  input, button {
+  input,
+  button {
     font-size: 16px;
   }
 
@@ -134,3 +139,87 @@ body {
     justify-content: flex-end;
   }
 }
+
+/* Prefixo: add-registro */
+
+.add-registro-container {
+  max-width: 600px;
+  margin: 30px auto;
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+.add-registro-container h1 {
+  text-align: center;
+  color: #990000;
+  margin-bottom: 30px;
+}
+
+.add-registro-container label {
+  font-weight: bold;
+  display: block;
+  margin-top: 15px;
+}
+
+.add-registro-container input[type="text"],
+.add-registro-container input[type="file"],
+.add-registro-container select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.add-registro-radio-group label {
+  margin-right: 20px;
+}
+
+.add-registro-input-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.add-registro-btn-add {
+  padding: 8px 12px;
+  background-color: #006400;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-registro-btn-remove {
+  background-color: #d33;
+  color: white;
+  border: none;
+  padding: 2px 8px;
+  margin-left: 10px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.add-registro-item {
+  background-color: #eee;
+  padding: 6px 10px;
+  margin-top: 6px;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+.add-registro-form-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.add-registro-form-buttons button {
+  width: 48%;
+}
+
+
