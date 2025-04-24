@@ -87,38 +87,44 @@ app.post('/add-registro', upload.single('arquivo'), (req, res) => {
     curso
   } = req.body;
 
-  const alunos = Array.isArray(req.body.alunos) ? req.body.alunos : [req.body.alunos];
-  const orientadores = Array.isArray(req.body.orientadores) ? req.body.orientadores : [req.body.orientadores];
+  // Garante que sejam arrays e evita undefined
+  const alunos = req.body.alunos || [];
+  const orientadores = req.body.orientadores || [];
+
+  const alunosArray = Array.isArray(alunos) ? alunos : [alunos];
+  const orientadoresArray = Array.isArray(orientadores) ? orientadores : [orientadores];
+
   const arquivo = req.file.buffer;
 
   const sqlTg = `INSERT INTO tg (tipo, nome_tg, curso, ano, semestre, arquivo) VALUES (?, ?, ?, ?, ?, ?)`;
   const tgValues = [tipo_trabalho, nome_trabalho, curso, ano_conclusao, semestre, arquivo];
 
-  connection.query(sqlTg, tgValues, (err, result) => {
+  db.query(sqlTg, tgValues, (err, result) => {
     if (err) return res.send('Erro ao inserir trabalho: ' + err);
     const idTg = result.insertId;
 
-    alunos.forEach(nome => {
-      if (!nome.trim()) return;
-      connection.query(`INSERT INTO aluno (nome_aluno) VALUES (?)`, [nome], (err, result) => {
+    alunosArray.forEach(nome => {
+      if (!nome || typeof nome !== 'string' || !nome.trim()) return;
+      db.query(`INSERT INTO aluno (nome_aluno) VALUES (?)`, [nome], (err, result) => {
         if (err) return console.log('Erro ao inserir aluno: ', err);
         const idAluno = result.insertId;
-        connection.query(`INSERT INTO aluno_tg (id_aluno, id_tg) VALUES (?, ?)`, [idAluno, idTg]);
+        db.query(`INSERT INTO aluno_tg (id_aluno, id_tg) VALUES (?, ?)`, [idAluno, idTg]);
       });
     });
 
-    orientadores.forEach(nome => {
-      if (!nome.trim()) return;
+    orientadoresArray.forEach(nome => {
+      if (!nome || typeof nome !== 'string' || !nome.trim()) return;
       const idOrientador = uuidv4();
-      connection.query(`INSERT INTO orientador (id_orientador, nome_orientador) VALUES (?, ?)`, [idOrientador, nome], (err) => {
+      db.query(`INSERT INTO orientador (id_orientador, nome_orientador) VALUES (?, ?)`, [idOrientador, nome], (err) => {
         if (err) return console.log('Erro ao inserir orientador: ', err);
-        connection.query(`INSERT INTO orientador_tg (id_orientador, id_tg) VALUES (?, ?)`, [idOrientador, idTg]);
+        db.query(`INSERT INTO orientador_tg (id_orientador, id_tg) VALUES (?, ?)`, [idOrientador, idTg]);
       });
     });
 
     res.redirect('/painel');
   });
 });
+
 
 // Iniciar servidor
 const PORT = 3000;
