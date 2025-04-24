@@ -60,11 +60,12 @@ app.get('/logout', (req, res) => {
 // Rota pagina adm
 app.get('/painel', (req, res) => {
   if (req.session.logado) {
-    res.render('pagina_adm'); // Renderiza o arquivo pagina_adm.ejs
+    res.render('pagina_adm', { resultados: [] }); // Agora passa a variável resultados, mesmo vazia
   } else {
     res.redirect('/login');
   }
 });
+
 
 // Rota GET para o formulário de registro
 app.get('/add-registro', (req, res) => {
@@ -124,6 +125,161 @@ app.post('/add-registro', upload.single('arquivo'), (req, res) => {
     res.redirect('/painel');
   });
 });
+
+app.get('/buscar', (req, res) => {
+  const termo = req.query.termo;
+
+  if (!termo) {
+    return res.render('pagina_adm', { resultados: [] });
+  }
+
+  const query = `
+    SELECT tg.*, 
+      GROUP_CONCAT(DISTINCT aluno.nome_aluno) AS alunos,
+      GROUP_CONCAT(DISTINCT orientador.nome_orientador) AS orientadores
+    FROM tg
+    LEFT JOIN aluno_tg ON tg.id_tg = aluno_tg.id_tg
+    LEFT JOIN aluno ON aluno.id_aluno = aluno_tg.id_aluno
+    LEFT JOIN orientador_tg ON tg.id_tg = orientador_tg.id_tg
+    LEFT JOIN orientador ON orientador.id_orientador = orientador_tg.id_orientador
+    WHERE 
+      tg.nome_tg LIKE ? OR 
+      aluno.nome_aluno LIKE ? OR 
+      orientador.nome_orientador LIKE ?
+    GROUP BY tg.id_tg
+  `;
+
+  const likeTerm = `%${termo}%`;
+
+  db.query(query, [likeTerm, likeTerm, likeTerm], (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar registros:', err);
+      return res.send('Erro na busca');
+    }
+
+    const registros = results.map(r => ({
+      ...r,
+      alunos: r.alunos ? r.alunos.split(',') : [],
+      orientadores: r.orientadores ? r.orientadores.split(',') : []
+    }));
+
+    res.render('pagina_adm', { resultados: registros });
+  });
+});
+
+app.get('/editar/:id', (req, res) => {
+  const id = req.params.id;
+
+  const query = `
+    SELECT tg.*, 
+      GROUP_CONCAT(DISTINCT aluno.nome_aluno) AS alunos,
+      GROUP_CONCAT(DISTINCT orientador.nome_orientador) AS orientadores
+    FROM tg
+    LEFT JOIN aluno_tg ON tg.id_tg = aluno_tg.id_tg
+    LEFT JOIN aluno ON aluno.id_aluno = aluno_tg.id_aluno
+    LEFT JOIN orientador_tg ON tg.id_tg = orientador_tg.id_tg
+    LEFT JOIN orientador ON orientador.id_orientador = orientador_tg.id_orientador
+    WHERE tg.id_tg = ?
+    GROUP BY tg.id_tg
+  `;
+
+  db.query(query, [id], (err, results) => {
+    if (err || results.length === 0) {
+      return res.send('Erro ao buscar registro: ' + err);
+    }
+
+    const registro = results[0];
+    registro.alunos = registro.alunos ? registro.alunos.split(',') : [];
+    registro.orientadores = registro.orientadores ? registro.orientadores.split(',') : [];
+
+    res.render('editar_registro', { registro });
+  });
+});
+
+app.post('/editar/:id', upload.single('arquivo'), (req, res) => {
+  const idTg = req.params.id;
+  const {
+    nome_trabalho,
+    tipo_trabalho,
+    ano_conclusao,
+    semestre,
+    curso,
+    alunos = [],
+    orientadores = []
+  } = req.body;
+
+  const alunosArray = Array.isArray(alunos) ? alunos : [alunos];
+  const orientadoresArray = Array.isArray(orientadores) ? orientadores : [orientadores];
+
+  const arquivo = req.file ? req.file.buffer : null;
+
+  const updateSql = `
+    UPDATE tg SET tipo = ?, nome_tg = ?, curso = ?, ano = ?, semestre = ?
+    ${arquivo ? ', arquivo = ?' : ''}
+    WHERE id_tg = ?
+  `;
+  const updateValues = arquivo 
+    ? [tipo_trabalho, nome_trabalho, curso, ano_conclusao, semestre, arquivo, idTg]
+    : [tipo_trabalho, nome_trabalho, curso, ano_conclusao, semestre, idTg];
+
+  db.query(updateSql, updateValues, (err) => {
+    if (err) return res.send('Erro ao atualizar trabalho: ' + err);
+
+    // Remover relacionamentos antigos
+    db.query(`DELETE FROM aluno_tg WHERE id_tg = ?`, [idTg]);
+    db.query(`DELETE FROM orientador_tg WHERE id_tg = ?`, [idTg]);
+
+    // Inserir novos alunos
+    alunosArray.forEach(nome => {
+      if (!nome.trim()) return;
+      db.query(`INSERT INTO aluno (nome_aluno) VALUES (?)`, [nome], (err, result) => {
+        if (err) return console.log('Erro aluno:', err);
+        const idAluno = result.insertId;
+        db.query(`INSERT INTO aluno_tg (id_aluno, id_tg) VALUES (?, ?)`, [idAluno, idTg]);
+      });
+    });
+
+    // Inserir novos orientadores
+    orientadoresArray.forEach(nome => {
+      if (!nome.trim()) return;
+      const idOrientador = uuidv4();
+      db.query(`INSERT INTO orientador (id_orientador, nome_orientador) VALUES (?, ?)`, [idOrientador, nome], (err) => {
+        if (err) return console.log('Erro orientador:', err);
+        db.query(`INSERT INTO orientador_tg (id_orientador, id_tg) VALUES (?, ?)`, [idOrientador, idTg]);
+      });
+    });
+
+    res.redirect('/painel');
+  });
+});
+
+app.post('/excluir/:id', (req, res) => {
+  const id = req.params.id;
+
+  // Exclui os relacionamentos com alunos e orientadores antes de excluir o trabalho
+  db.query('DELETE FROM aluno_tg WHERE id_tg = ?', [id], (err) => {
+    if (err) {
+      return res.send('Erro ao excluir alunos do trabalho: ' + err);
+    }
+
+    db.query('DELETE FROM orientador_tg WHERE id_tg = ?', [id], (err) => {
+      if (err) {
+        return res.send('Erro ao excluir orientadores do trabalho: ' + err);
+      }
+
+      db.query('DELETE FROM tg WHERE id_tg = ?', [id], (err) => {
+        if (err) {
+          return res.send('Erro ao excluir trabalho: ' + err);
+        }
+
+        res.redirect('/painel');
+      });
+    });
+  });
+});
+
+
+
 
 
 // Iniciar servidor

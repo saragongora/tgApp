@@ -222,4 +222,33 @@ button {
   width: 48%;
 }
 
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.search-container input {
+  padding: 10px;
+  font-size: 16px;
+  width: 400px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.search-container button {
+  padding: 10px 15px;
+  font-size: 16px;
+  margin-left: 10px;
+  border: none;
+  background-color: #2d2dff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.resultados {
+  margin-top: 40px;
+  text-align: center;
+}
 
