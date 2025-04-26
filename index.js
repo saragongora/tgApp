@@ -5,7 +5,6 @@ const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 const db = require('./models/db');
 
-
 const app = express();
 
 // Configurações do Express
@@ -23,16 +22,18 @@ app.use(session({
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Configurar o multer
+// Configurar multer
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// Rota para a página inicial (redireciona pro login)
+// --- Rotas ---
+
+// Página inicial → redireciona pro login
 app.get('/', (req, res) => {
   res.redirect('/login');
 });
 
-// Rota GET para exibir a tela de login
+// Tela de login
 app.get('/login', (req, res) => {
   res.render('login_adm', { erro: null });
 });
@@ -51,23 +52,23 @@ app.post('/login', (req, res) => {
   }
 });
 
-// Rota de logout
+// Logout
 app.get('/logout', (req, res) => {
   req.session.destroy();
   res.redirect('/login');
 });
 
-// Rota pagina adm
+// Painel administrativo
 app.get('/painel', (req, res) => {
   if (req.session.logado) {
-    res.render('pagina_adm', { resultados: [] }); // Agora passa a variável resultados, mesmo vazia
+    res.render('pagina_adm', { resultados: [], buscaRealizada: false });
   } else {
     res.redirect('/login');
   }
 });
 
 
-// Rota GET para o formulário de registro
+// Tela de adicionar novo registro
 app.get('/add-registro', (req, res) => {
   if (req.session.logado) {
     res.render('addRegistro');
@@ -76,7 +77,7 @@ app.get('/add-registro', (req, res) => {
   }
 });
 
-// Rota POST para salvar novo registro
+// Salvar novo registro
 app.post('/add-registro', upload.single('arquivo'), (req, res) => {
   if (!req.session.logado) return res.redirect('/login');
 
@@ -85,16 +86,13 @@ app.post('/add-registro', upload.single('arquivo'), (req, res) => {
     tipo_trabalho,
     ano_conclusao,
     semestre,
-    curso
+    curso,
+    alunos = [],
+    orientadores = []
   } = req.body;
-
-  // Garante que sejam arrays e evita undefined
-  const alunos = req.body.alunos || [];
-  const orientadores = req.body.orientadores || [];
 
   const alunosArray = Array.isArray(alunos) ? alunos : [alunos];
   const orientadoresArray = Array.isArray(orientadores) ? orientadores : [orientadores];
-
   const arquivo = req.file.buffer;
 
   const sqlTg = `INSERT INTO tg (tipo, nome_tg, curso, ano, semestre, arquivo) VALUES (?, ?, ?, ?, ?, ?)`;
@@ -102,22 +100,23 @@ app.post('/add-registro', upload.single('arquivo'), (req, res) => {
 
   db.query(sqlTg, tgValues, (err, result) => {
     if (err) return res.send('Erro ao inserir trabalho: ' + err);
+
     const idTg = result.insertId;
 
     alunosArray.forEach(nome => {
-      if (!nome || typeof nome !== 'string' || !nome.trim()) return;
+      if (!nome.trim()) return;
       db.query(`INSERT INTO aluno (nome_aluno) VALUES (?)`, [nome], (err, result) => {
-        if (err) return console.log('Erro ao inserir aluno: ', err);
+        if (err) return console.log('Erro ao inserir aluno:', err);
         const idAluno = result.insertId;
         db.query(`INSERT INTO aluno_tg (id_aluno, id_tg) VALUES (?, ?)`, [idAluno, idTg]);
       });
     });
 
     orientadoresArray.forEach(nome => {
-      if (!nome || typeof nome !== 'string' || !nome.trim()) return;
+      if (!nome.trim()) return;
       const idOrientador = uuidv4();
       db.query(`INSERT INTO orientador (id_orientador, nome_orientador) VALUES (?, ?)`, [idOrientador, nome], (err) => {
-        if (err) return console.log('Erro ao inserir orientador: ', err);
+        if (err) return console.log('Erro ao inserir orientador:', err);
         db.query(`INSERT INTO orientador_tg (id_orientador, id_tg) VALUES (?, ?)`, [idOrientador, idTg]);
       });
     });
@@ -126,11 +125,12 @@ app.post('/add-registro', upload.single('arquivo'), (req, res) => {
   });
 });
 
+// Buscar registros
 app.get('/buscar', (req, res) => {
   const termo = req.query.termo;
 
   if (!termo) {
-    return res.render('pagina_adm', { resultados: [] });
+    return res.render('pagina_adm', { resultados: [], buscaRealizada: false });
   }
 
   const query = `
@@ -163,12 +163,14 @@ app.get('/buscar', (req, res) => {
       orientadores: r.orientadores ? r.orientadores.split(',') : []
     }));
 
-    res.render('pagina_adm', { resultados: registros });
+    res.render('pagina_adm', { resultados: registros, buscaRealizada: true });
   });
 });
 
+
+// (NOVA) Rota GET para carregar formulário de edição
 app.get('/editar/:id', (req, res) => {
-  const id = req.params.id;
+  const idTg = req.params.id;
 
   const query = `
     SELECT tg.*, 
@@ -183,10 +185,9 @@ app.get('/editar/:id', (req, res) => {
     GROUP BY tg.id_tg
   `;
 
-  db.query(query, [id], (err, results) => {
-    if (err || results.length === 0) {
-      return res.send('Erro ao buscar registro: ' + err);
-    }
+  db.query(query, [idTg], (err, results) => {
+    if (err) return res.send('Erro ao carregar dados para edição: ' + err);
+    if (results.length === 0) return res.send('Registro não encontrado');
 
     const registro = results[0];
     registro.alunos = registro.alunos ? registro.alunos.split(',') : [];
@@ -196,6 +197,7 @@ app.get('/editar/:id', (req, res) => {
   });
 });
 
+// POST para salvar edição
 app.post('/editar/:id', upload.single('arquivo'), (req, res) => {
   const idTg = req.params.id;
   const {
@@ -210,7 +212,6 @@ app.post('/editar/:id', upload.single('arquivo'), (req, res) => {
 
   const alunosArray = Array.isArray(alunos) ? alunos : [alunos];
   const orientadoresArray = Array.isArray(orientadores) ? orientadores : [orientadores];
-
   const arquivo = req.file ? req.file.buffer : null;
 
   const updateSql = `
@@ -218,72 +219,79 @@ app.post('/editar/:id', upload.single('arquivo'), (req, res) => {
     ${arquivo ? ', arquivo = ?' : ''}
     WHERE id_tg = ?
   `;
-  const updateValues = arquivo 
+  const updateValues = arquivo
     ? [tipo_trabalho, nome_trabalho, curso, ano_conclusao, semestre, arquivo, idTg]
     : [tipo_trabalho, nome_trabalho, curso, ano_conclusao, semestre, idTg];
 
   db.query(updateSql, updateValues, (err) => {
     if (err) return res.send('Erro ao atualizar trabalho: ' + err);
 
-    // Remover relacionamentos antigos
+    // Atualizar alunos e orientadores
     db.query(`DELETE FROM aluno_tg WHERE id_tg = ?`, [idTg]);
     db.query(`DELETE FROM orientador_tg WHERE id_tg = ?`, [idTg]);
 
-    // Inserir novos alunos
     alunosArray.forEach(nome => {
       if (!nome.trim()) return;
-      db.query(`INSERT INTO aluno (nome_aluno) VALUES (?)`, [nome], (err, result) => {
-        if (err) return console.log('Erro aluno:', err);
-        const idAluno = result.insertId;
-        db.query(`INSERT INTO aluno_tg (id_aluno, id_tg) VALUES (?, ?)`, [idAluno, idTg]);
+    
+      db.query(`SELECT id_aluno FROM aluno WHERE nome_aluno = ?`, [nome], (err, results) => {
+        if (err) return console.log('Erro ao buscar aluno:', err);
+    
+        if (results.length > 0) {
+          // Já existe
+          const idAluno = results[0].id_aluno;
+          db.query(`INSERT INTO aluno_tg (id_aluno, id_tg) VALUES (?, ?)`, [idAluno, idTg]);
+        } else {
+          // Não existe → cria
+          db.query(`INSERT INTO aluno (nome_aluno) VALUES (?)`, [nome], (err, result) => {
+            if (err) return console.log('Erro ao inserir aluno:', err);
+            const idAluno = result.insertId;
+            db.query(`INSERT INTO aluno_tg (id_aluno, id_tg) VALUES (?, ?)`, [idAluno, idTg]);
+          });
+        }
       });
     });
-
-    // Inserir novos orientadores
+    
     orientadoresArray.forEach(nome => {
       if (!nome.trim()) return;
-      const idOrientador = uuidv4();
-      db.query(`INSERT INTO orientador (id_orientador, nome_orientador) VALUES (?, ?)`, [idOrientador, nome], (err) => {
-        if (err) return console.log('Erro orientador:', err);
-        db.query(`INSERT INTO orientador_tg (id_orientador, id_tg) VALUES (?, ?)`, [idOrientador, idTg]);
+    
+      db.query(`SELECT id_orientador FROM orientador WHERE nome_orientador = ?`, [nome], (err, results) => {
+        if (err) return console.log('Erro ao buscar orientador:', err);
+    
+        if (results.length > 0) {
+          // Já existe
+          const idOrientador = results[0].id_orientador;
+          db.query(`INSERT INTO orientador_tg (id_orientador, id_tg) VALUES (?, ?)`, [idOrientador, idTg]);
+        } else {
+          // Não existe → cria
+          const idOrientador = uuidv4();
+          db.query(`INSERT INTO orientador (id_orientador, nome_orientador) VALUES (?, ?)`, [idOrientador, nome], (err) => {
+            if (err) return console.log('Erro ao inserir orientador:', err);
+            db.query(`INSERT INTO orientador_tg (id_orientador, id_tg) VALUES (?, ?)`, [idOrientador, idTg]);
+          });
+        }
       });
     });
+    
 
     res.redirect('/painel');
   });
 });
 
+
+
+// Excluir registro
 app.post('/excluir/:id', (req, res) => {
-  const id = req.params.id;
+  const idTg = req.params.id;
 
-  // Exclui os relacionamentos com alunos e orientadores antes de excluir o trabalho
-  db.query('DELETE FROM aluno_tg WHERE id_tg = ?', [id], (err) => {
-    if (err) {
-      return res.send('Erro ao excluir alunos do trabalho: ' + err);
-    }
-
-    db.query('DELETE FROM orientador_tg WHERE id_tg = ?', [id], (err) => {
-      if (err) {
-        return res.send('Erro ao excluir orientadores do trabalho: ' + err);
-      }
-
-      db.query('DELETE FROM tg WHERE id_tg = ?', [id], (err) => {
-        if (err) {
-          return res.send('Erro ao excluir trabalho: ' + err);
-        }
-
-        res.redirect('/painel');
-      });
-    });
+  db.query(`DELETE FROM aluno_tg WHERE id_tg = ?`, [idTg]);
+  db.query(`DELETE FROM orientador_tg WHERE id_tg = ?`, [idTg]);
+  db.query(`DELETE FROM tg WHERE id_tg = ?`, [idTg], (err) => {
+    if (err) return res.send('Erro ao excluir trabalho: ' + err);
+    res.redirect('/painel');
   });
 });
 
-
-
-
-
 // Iniciar servidor
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
+app.listen(3000, () => {
+  console.log('Servidor rodando na porta 3000');
 });

@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <title>Painel Administrativo</title>
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/search.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 
 <body>
 
@@ -27,9 +27,10 @@
   </div>
 
   <div class="search-container">
-    <form action="/buscar" method="GET">
-      <input type="text" name="termo" placeholder="Buscar por trabalho, aluno ou orientador..." required>
-      <button type="submit">Buscar</button>
+    <label for="termo">Buscar por trabalho, aluno ou orientador...</label>
+    <form action="/buscar" method="GET" class="search-bar" id="searchForm">
+      <input type="text" id="termo" name="termo" required>
+      <span class="search-icon" id="searchIcon">🔍</span>
     </form>
   </div>
 
@@ -56,11 +57,12 @@
         <% }) %>
       </ul>
     <% } else { %>
-      <p>Nenhum resultado encontrado.</p>
+      <% if (buscaRealizada) { %> 
+        <p>Nenhum resultado encontrado.</p>
+      <% } %>
     <% } %>
   </div>
   
-
+  <script src="/js/procurar.js"></script>
 </body>
-
 </html>

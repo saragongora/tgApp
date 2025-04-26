@@ -25,22 +25,36 @@ function removerItem(containerId, index) {
 }
 
 function atualizarInputsOcultos() {
-  const inputsDiv = document.getElementById('inputsOcultos');
-  inputsDiv.innerHTML = '';
+  const inputsOcultos = document.getElementById('inputsOcultos');
+  inputsOcultos.innerHTML = '';
 
-  const alunos = Array.from(document.getElementById('alunosContainer').children);
-  const orientadores = Array.from(document.getElementById('orientadoresContainer').children);
-
-  alunos.forEach(div => {
-    const nome = div.querySelector('span').textContent;
-    inputsDiv.innerHTML += `<input type="hidden" name="alunos" value="${nome}">`;
+  // Pegar orientadores
+  const orientadores = document.querySelectorAll('#orientadoresContainer .orientador-item span');
+  orientadores.forEach(orientador => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'orientadores[]';
+    input.value = orientador.innerText;
+    inputsOcultos.appendChild(input);
   });
 
-  orientadores.forEach(div => {
-    const nome = div.querySelector('span').textContent;
-    inputsDiv.innerHTML += `<input type="hidden" name="orientadores" value="${nome}">`;
+  // Pegar alunos
+  const alunos = document.querySelectorAll('#alunosContainer .aluno-item span');
+  alunos.forEach(aluno => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'alunos[]';
+    input.value = aluno.innerText;
+    inputsOcultos.appendChild(input);
   });
 }
+
+// Antes de enviar o formulário, atualize os inputs ocultos
+const form = document.querySelector('form');
+form.addEventListener('submit', function() {
+  atualizarInputsOcultos();
+});
+
 
 // Atualiza ao carregar a página (para os registros carregados já existentes)
 document.addEventListener('DOMContentLoaded', atualizarInputsOcultos);
