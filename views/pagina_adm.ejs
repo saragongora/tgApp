@@ -27,12 +27,18 @@
   </div>
 
   <div class="search-container">
-    <label for="termo">Buscar por trabalho, aluno ou orientador...</label>
+    <label for="termo">BUSCAR POR TRABALHOS DE GRADUAÇÃO QUE DESEJA GERENCIAR</label>
+    
+    <p class="sub-text">Pesquise por trabalhos, alunos ou orientadores</p>
+    
     <form action="/buscar" method="GET" class="search-bar" id="searchForm">
       <input type="text" id="termo" name="termo" required>
-      <span class="search-icon" id="searchIcon">🔍</span>
+      <span class="search-icon" id="searchIcon">
+        <img src="/images/icon_lupa.png" alt="Ícone de Lupa" />
+      </span>      
     </form>
   </div>
+  
 
   <div class="resultados">
     <% if (resultados && resultados.length > 0) { %>

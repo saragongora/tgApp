@@ -222,45 +222,105 @@ button {
   width: 48%;
 }
 
+
 .search-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 20px;
+  justify-content: center; /* centraliza no eixo vertical */
+  height: 80vh; /* ocupa a altura total da tela */
 }
 
+
 .search-container label {
-  margin-bottom: 8px;
   font-weight: bold;
   font-size: 16px;
+  margin-bottom: 0px; /* Diminui o espaço abaixo do texto */
 }
+
+.sub-text {
+  font-size: 14px;
+  color: #777;
+  opacity: 0.8; /* 70% visível */
+  margin-bottom: 20px; /* Diminui o espaço abaixo do texto */
+}
+
 
 .search-bar {
   position: relative;
-  width: 300px;
+  width: 650px;
 }
 
 .search-bar input {
   width: 100%;
-  padding: 10px 40px 10px 10px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 15px;
   font-size: 16px;
 }
 
 .search-bar .search-icon {
   position: absolute;
   right: 10px;
-  top: 50%;
+  top: 40%;
   transform: translateY(-50%);
   cursor: pointer;
-  font-size: 20px;
-  color: #888;
+  width: 25px; /* Ajuste o tamanho conforme necessário */
+  height: auto; /* Mantém a proporção da imagem */
+}
+
+.search-bar .search-icon img {
+  width: 100%; /* Faz a imagem ocupar todo o espaço do elemento pai */
+  height: auto;
 }
 
 .search-bar .search-icon:hover {
   color: #000;
 }
+
+@media (max-width: 480px) {
+  /* Ajustes no container de pesquisa */
+  .search-container {
+    width: 80%; /* Ocupa 80% da largura da tela */
+    height: 70vh; /* Faz com que o container ocupe toda a altura da tela */
+    display: flex; /* Usamos flexbox para o alinhamento */
+    flex-direction: column; /* Organiza os elementos verticalmente */
+    justify-content: center; /* Centraliza os itens no eixo vertical */
+    padding: 15px; /* Adiciona espaçamento */
+    box-sizing: border-box; /* Garante que o padding não ultrapasse a largura */
+  }
+
+  .search-container label {
+    font-size: 14px; /* Reduz o tamanho da fonte */
+    margin-bottom: 0px; /* Diminui o espaçamento abaixo do texto */
+    text-align: center; /* Centraliza o texto */
+  }
+
+  .sub-text {
+    font-size: 12px; /* Ajusta o subtítulo para ficar legível */
+    margin-bottom: 10px; /* Reduz a margem abaixo */
+    text-align: center; /* Centraliza o texto */
+  }
+
+  .search-bar {
+    width: 90%; /* Barra de pesquisa ocupa 90% da largura */
+    max-width: 100%; /* Remove limite de largura máxima */
+    padding: 10px 0; /* Ajusta o padding para um tamanho confortável */
+  }
+
+  .search-bar input {
+    font-size: 14px; /* Ajusta o tamanho da fonte */
+    padding: 8px; /* Garante que o input tenha um tamanho confortável */
+    border-radius: 15px; /* Mantém o arredondamento do input */
+    border: 1px solid #ccc; /* Mantém a borda */
+  }
+
+  .search-bar .search-icon {
+    width: 20px; /* Ajusta o tamanho do ícone */
+    height: auto; /* Mantém a proporção da imagem */
+    right: 10px; /* Ajusta a posição */
+  }
+}
+
 
 
 .resultados {
