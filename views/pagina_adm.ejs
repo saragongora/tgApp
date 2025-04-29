@@ -26,7 +26,7 @@
     Faculdade de Tecnologia José Crespo Gonzales
   </div>
 
-  <div class="search-container">
+  <div class="search-container" id="searchArea">
     <label for="termo">BUSCAR POR TRABALHOS DE GRADUAÇÃO QUE DESEJA GERENCIAR</label>
     
     <p class="sub-text">Pesquise por trabalhos, alunos ou orientadores</p>
@@ -42,32 +42,46 @@
 
   <div class="resultados">
     <% if (resultados && resultados.length > 0) { %>
-      <ul>
-        <% resultados.forEach(registro => { %>
-          <li>
-            <strong><%= registro.nome_tg %></strong> - 
-            Alunos: <%= registro.alunos.join(', ') %> - 
-            Orientadores: <%= registro.orientadores.join(', ') %>
-  
-            <!-- Botões de ação -->
-            <a href="/editar/<%= registro.id_tg %>" title="Editar">
-              ✏️
-            </a>
-  
-            <form action="/excluir/<%= registro.id_tg %>" method="POST" style="display:inline;">
-              <button type="submit" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este registro?');">
-                🗑️
-              </button>
-            </form>
-          </li>
-        <% }) %>
-      </ul>
+      <% resultados.forEach(registro => { %>
+        <div class="card-result">
+          <div class="card-header">
+            <p class="titulo"><strong>PI - <%= registro.nome_tg %></strong></p>
+            <span class="ano-semestre"><%= registro.ano %>-<%= registro.semestre %></span>
+          </div>
+        
+          <div class="card-body-footer">
+            <div class="card-texts">
+              <p>Orientador: <%= registro.orientadores.join(', ') %></p>
+              <p>Alunos: <%= registro.alunos.join(', ') %></p>
+              <p>Curso: <%= registro.curso %></p>
+            </div>
+          
+            <div class="card-buttons">
+              <a href="/editar/<%= registro.id_tg %>" title="Editar">
+                <img src="/images/icon_editar.png" alt="Editar" style="width: 20px; height: 20px;">
+              </a>
+              <form action="/excluir/<%= registro.id_tg %>" method="POST" style="display:inline;">
+                <button type="submit" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este registro?');" style="background: none; border: none; padding: 0;">
+                  <img src="/images/icon_excluir.png" alt="Excluir" style="width: 20px; height: 20px;">
+                </button>
+              </form>
+            </div>
+            
+          </div>
+          
+        </div>
+        
+        
+      <% }) %>
     <% } else { %>
       <% if (buscaRealizada) { %> 
         <p>Nenhum resultado encontrado.</p>
       <% } %>
     <% } %>
   </div>
+  
+
+
   
   <script src="/js/procurar.js"></script>
 </body>
