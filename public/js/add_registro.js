@@ -28,7 +28,6 @@ function atualizarInputsOcultos() {
   const inputsOcultos = document.getElementById('inputsOcultos');
   inputsOcultos.innerHTML = '';
 
-  // Pegar orientadores
   const orientadores = document.querySelectorAll('#orientadoresContainer .orientador-item span');
   orientadores.forEach(orientador => {
     const input = document.createElement('input');
@@ -38,7 +37,6 @@ function atualizarInputsOcultos() {
     inputsOcultos.appendChild(input);
   });
 
-  // Pegar alunos
   const alunos = document.querySelectorAll('#alunosContainer .aluno-item span');
   alunos.forEach(aluno => {
     const input = document.createElement('input');
@@ -49,12 +47,10 @@ function atualizarInputsOcultos() {
   });
 }
 
-// Antes de enviar o formulário, atualize os inputs ocultos
 const form = document.querySelector('form');
 form.addEventListener('submit', function() {
   atualizarInputsOcultos();
 });
 
 
-// Atualiza ao carregar a página (para os registros carregados já existentes)
 document.addEventListener('DOMContentLoaded', atualizarInputsOcultos);

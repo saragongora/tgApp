@@ -15,7 +15,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* separa logo de botões */
   box-sizing: border-box;
 }
 
@@ -34,12 +33,9 @@ body {
   cursor: pointer;
   transition: background-color 0.3s ease;
   display: inline-flex;
-  /* <- adiciona isso */
   align-items: center;
   margin: 0;
-  /* <- garante que não tem margem sobrando */
   box-sizing: border-box;
-  /* garante que padding não ultrapassa */
 }
 
 .sub-header {
@@ -48,12 +44,10 @@ body {
   padding: 10px 0;
   font-size: 14px;
   font-weight: bold;
-  /* negrito */
   width: 100%;
   display: flex;
   align-items: center;
   padding-left: 60px;
-  /* igual ao margin-left do logo */
   box-sizing: border-box;
 }
 
@@ -95,7 +89,6 @@ button {
   width: 100%;
   display: flex;
   justify-content: flex-end;
-  /* Alinha o botão à direita */
 }
 
 
@@ -104,15 +97,13 @@ button {
   margin-bottom: 10px;
 }
 
-
-/* Responsividade para telas menores */
 @media (max-width: 600px) {
   @media (max-width: 600px) {
     .header {
       padding: 15px 20px;
-      flex-direction: row; /* <- mantém os elementos lado a lado */
+      flex-direction: row; 
       align-items: center;
-      justify-content: space-between; /* <- logo à esquerda, botões à direita */
+      justify-content: space-between; 
     }
   
     .header-buttons {
@@ -168,9 +159,6 @@ button {
   }
 }
 
-
-/* Prefixo: add-registro */
-
 .add-registro-container {
   max-width: 900px;
   margin: 30px auto;
@@ -179,7 +167,7 @@ button {
   border-radius: 10px;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
-  font-size: 14px; /* adicione essa linha */
+  font-size: 14px; 
 }
 
 .add-registro-container h2 {
@@ -240,8 +228,8 @@ button {
   justify-content: center;
   align-items: center;
   border-radius: 4px;
-  background-color: #006400; /* Cor de fundo verde para o botão de adicionar */
-  color: white; /* Cor do texto no botão de adicionar */
+  background-color: #006400; 
+  color: white; 
   cursor: pointer;
   font-size: 18px;
 }
@@ -253,19 +241,19 @@ button {
   justify-content: center;
   align-items: center;
   border-radius: 4px;
-  background-color: #d33; /* Cor de fundo vermelha para o botão de remover */
-  color: white; /* Cor do texto no botão de remover */
+  background-color: #d33;
+  color: white; 
   cursor: pointer;
   font-size: 18px;
 }
 
 .add-registro-btn-add:hover,
 .remove-item:hover {
-  background-color: #004d00; /* Cor de fundo mais escura ao passar o mouse sobre o botão de adicionar */
+  background-color: #004d00; 
 }
 
 .remove-item:hover {
-  background-color: #a00; /* Cor de fundo mais escura ao passar o mouse sobre o botão de remover */
+  background-color: #a00;
 }
 
 .add-registro-btn-add:focus,
@@ -284,13 +272,13 @@ button {
 
 .add-registro-form-buttons {
   display: flex;
-  justify-content: flex-end; /* Alinha à direita */
+  justify-content: flex-end; 
   gap: 10px;
   margin-top: 30px;
 }
 
 .add-registro-form-buttons button {
-  width: 120px; /* ou outro valor que preferir */
+  width: 120px; 
   height: 40px;
   font-weight: bold;
 }
@@ -326,29 +314,29 @@ button {
 .campo-duplo {
   display: flex;
   justify-content: space-between;
-  gap: 20px; /* Ajuste o espaço entre os campos */
+  gap: 20px; 
 }
 
 .campo-item {
-  flex: 1; /* Faz com que cada campo ocupe a mesma largura */
+  flex: 1; 
 }
 
 .campo-item label {
-  display: block; /* Garante que o label apareça acima do campo */
-  margin-bottom: 5px; /* Ajusta o espaçamento do label */
+  display: block; 
+  margin-bottom: 5px; 
 }
 
 .aluno-item,
 .orientador-item {
-  margin-bottom: 15px; /* Aumenta o espaçamento entre os alunos/adicionados */
+  margin-bottom: 15px; 
   display: flex;
-  justify-content: space-between; /* Garante que o nome e o botão "x" fiquem nas extremidades */
-  align-items: center; /* Alinha verticalmente o conteúdo */
+  justify-content: space-between; 
+  align-items: center; 
 }
 
 .aluno-item span,
 .orientador-item span {
-  margin-right: 10px; /* Ajusta o espaçamento entre o nome e o botão */
+  margin-right: 10px; 
 }
 
 
@@ -357,22 +345,22 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* centraliza no eixo vertical */
-  height: 80vh; /* ocupa a altura total da tela */
+  justify-content: center; 
+  height: 80vh;
 }
 
 
 .search-container label {
   font-weight: bold;
   font-size: 16px;
-  margin-bottom: 0px; /* Diminui o espaço abaixo do texto */
+  margin-bottom: 0px; 
 }
 
 .sub-text {
   font-size: 14px;
   color: #777;
-  opacity: 0.8; /* 70% visível */
-  margin-bottom: 20px; /* Diminui o espaço abaixo do texto */
+  opacity: 0.8; 
+  margin-bottom: 20px; 
 }
 
 
@@ -394,12 +382,12 @@ button {
   top: 40%;
   transform: translateY(-50%);
   cursor: pointer;
-  width: 25px; /* Ajuste o tamanho conforme necessário */
-  height: auto; /* Mantém a proporção da imagem */
+  width: 25px; 
+  height: auto;
 }
 
 .search-bar .search-icon img {
-  width: 100%; /* Faz a imagem ocupar todo o espaço do elemento pai */
+  width: 100%; 
   height: auto;
 }
 
@@ -407,7 +395,6 @@ button {
   color: #000;
 }
 
-/* Quando houver resultados, ajusta a barra de pesquisa */
 .search-container.top {
   margin-top: 30px;
   height: auto;
@@ -415,7 +402,6 @@ button {
   transition: all 0.4s ease;
 }
 
-/* Oculta o label e subtítulo com fade */
 .search-container.top label,
 .search-container.top .sub-text {
   opacity: 0;
@@ -429,46 +415,45 @@ button {
 
 
 @media (max-width: 480px) {
-  /* Ajustes no container de pesquisa */
   .search-container {
-    width: 95%; /* Ocupa 80% da largura da tela */
-    height: 70vh; /* Faz com que o container ocupe toda a altura da tela */
-    display: flex; /* Usamos flexbox para o alinhamento */
-    flex-direction: column; /* Organiza os elementos verticalmente */
-    justify-content: center; /* Centraliza os itens no eixo vertical */
-    padding: 15px; /* Adiciona espaçamento */
-    box-sizing: border-box; /* Garante que o padding não ultrapasse a largura */
+    width: 95%; 
+    height: 70vh; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    padding: 15px; 
+    box-sizing: border-box; 
   }
 
   .search-container label {
-    font-size: 14px; /* Reduz o tamanho da fonte */
-    margin-bottom: 0px; /* Diminui o espaçamento abaixo do texto */
-    text-align: center; /* Centraliza o texto */
+    font-size: 14px; 
+    margin-bottom: 0px; 
+    text-align: center; 
   }
 
   .sub-text {
-    font-size: 12px; /* Ajusta o subtítulo para ficar legível */
-    margin-bottom: 10px; /* Reduz a margem abaixo */
-    text-align: center; /* Centraliza o texto */
+    font-size: 12px; 
+    margin-bottom: 10px; 
+    text-align: center; 
   }
 
   .search-bar {
-    width: 90%; /* Barra de pesquisa ocupa 90% da largura */
-    max-width: 100%; /* Remove limite de largura máxima */
-    padding: 10px 0; /* Ajusta o padding para um tamanho confortável */
+    width: 90%; 
+    max-width: 100%; 
+    padding: 10px 0; 
   }
 
   .search-bar input {
-    font-size: 14px; /* Ajusta o tamanho da fonte */
-    padding: 8px; /* Garante que o input tenha um tamanho confortável */
-    border-radius: 15px; /* Mantém o arredondamento do input */
-    border: 1px solid #ccc; /* Mantém a borda */
+    font-size: 14px; 
+    padding: 8px; 
+    border-radius: 15px; 
+    border: 1px solid #ccc; 
   }
 
   .search-bar .search-icon {
-    width: 20px; /* Ajusta o tamanho do ícone */
-    height: auto; /* Mantém a proporção da imagem */
-    right: 10px; /* Ajusta a posição */
+    width: 20px; 
+    height: auto; 
+    right: 10px; 
   }
 }
 
@@ -479,17 +464,16 @@ button {
   border-radius: 10px;
   font-family: 'Roboto', sans-serif;
 
-  width: 170%; /* mantém o tamanho desejado */
+  width: 170%; 
   max-width: 1100px;
   padding: 24px;
 
   position: relative;
-  left: 50%;                /* move o ponto de referência para o meio */
-  transform: translateX(-50%); /* puxa o elemento de volta metade da largura */
+  left: 50%;                
+  transform: translateX(-50%); 
 }
 
 
-/* Cabeçalho do card: título à esquerda, ano à direita */
 .card-header {
   display: flex;
   justify-content: space-between;

@@ -168,7 +168,7 @@ app.get('/buscar', (req, res) => {
 });
 
 
-// (NOVA) Rota GET para carregar formulário de edição
+// Rota GET para carregar formulário de edição
 app.get('/editar/:id', (req, res) => {
   const idTg = req.params.id;
 

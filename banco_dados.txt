@@ -1,0 +1,43 @@
+CREATE DATABASE IF NOT EXISTS trabalhos_academicos;
+USE trabalhos_academicos;
+
+-- Tabela aluno
+CREATE TABLE aluno (
+    id_aluno INT AUTO_INCREMENT PRIMARY KEY,
+    nome_aluno VARCHAR(100) NOT NULL
+);
+
+-- Tabela tg
+CREATE TABLE tg (
+    id_tg INT AUTO_INCREMENT PRIMARY KEY,
+    tipo ENUM('pi', 'tg', 'ic') NOT NULL,
+    nome_tg VARCHAR(150) NOT NULL,
+    curso VARCHAR(50) NOT NULL,
+    ano YEAR NOT NULL,
+    semestre ENUM('1', '2') NOT NULL,
+    arquivo LONGBLOB -- para armazenar o PDF diretamente no banco (ou use caminho do arquivo como VARCHAR)
+);
+
+-- Tabela aluno_tg (tabela de associação)
+CREATE TABLE aluno_tg (
+    id_aluno INT,
+    id_tg INT,
+    PRIMARY KEY (id_aluno, id_tg),
+    FOREIGN KEY (id_aluno) REFERENCES aluno(id_aluno) ON DELETE CASCADE,
+    FOREIGN KEY (id_tg) REFERENCES tg(id_tg) ON DELETE CASCADE
+);
+
+-- Tabela orientador
+CREATE TABLE orientador (
+    id_orientador CHAR(36) PRIMARY KEY, -- UUID por exemplo
+    nome_orientador VARCHAR(100) NOT NULL
+);
+
+-- Tabela orientador_tg (tabela de associação)
+CREATE TABLE orientador_tg (
+    id_orientador CHAR(36),
+    id_tg INT,
+    PRIMARY KEY (id_orientador, id_tg),
+    FOREIGN KEY (id_orientador) REFERENCES orientador(id_orientador) ON DELETE CASCADE,
+    FOREIGN KEY (id_tg) REFERENCES tg(id_tg) ON DELETE CASCADE
+);
