@@ -107,11 +107,39 @@ button {
 
 /* Responsividade para telas menores */
 @media (max-width: 600px) {
-  .header {
-    padding: 15px 20px;
-    flex-direction: column;
-    align-items: flex-start;
+  @media (max-width: 600px) {
+    .header {
+      padding: 15px 20px;
+      flex-direction: row; /* <- mantém os elementos lado a lado */
+      align-items: center;
+      justify-content: space-between; /* <- logo à esquerda, botões à direita */
+    }
+  
+    .header-buttons {
+      gap: 10px;
+    }
+  
+    .header-buttons .btn-header {
+      color: transparent;
+      font-size: 0;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      background-color: transparent;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 24px 24px;
+    }
+  
+    .btn-header:nth-child(1) {
+      background-image: url('/images/icon_add.png');
+    }
+  
+    .btn-header.logout {
+      background-image: url('/images/icon_sair.png');
+    }
   }
+  
 
   .header a {
     margin-left: 0;
@@ -301,7 +329,7 @@ button {
 @media (max-width: 480px) {
   /* Ajustes no container de pesquisa */
   .search-container {
-    width: 80%; /* Ocupa 80% da largura da tela */
+    width: 95%; /* Ocupa 80% da largura da tela */
     height: 70vh; /* Faz com que o container ocupe toda a altura da tela */
     display: flex; /* Usamos flexbox para o alinhamento */
     flex-direction: column; /* Organiza os elementos verticalmente */
@@ -409,3 +437,33 @@ button {
   transform: scale(1.1);
 }
 
+@media (max-width: 600px) {
+  .card-result {
+    width: 80%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 16px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .card-body-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .card-buttons {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .card-buttons a,
+  .card-buttons button {
+    font-size: 1rem;
+  }
+}
