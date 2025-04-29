@@ -168,22 +168,24 @@ button {
   }
 }
 
+
 /* Prefixo: add-registro */
 
 .add-registro-container {
-  max-width: 600px;
+  max-width: 900px;
   margin: 30px auto;
   background: white;
-  padding: 30px;
+  padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+  font-size: 14px; /* adicione essa linha */
 }
 
-.add-registro-container h1 {
+.add-registro-container h2 {
   text-align: center;
   color: #990000;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .add-registro-container label {
@@ -191,6 +193,24 @@ button {
   display: block;
   margin-top: 15px;
 }
+
+.add-registro-radio-group {
+  display: flex;
+  gap: 20px;
+  margin-top: 8px;
+  align-items: left;
+}
+
+.add-registro-radio-group label {
+  display: flex;
+  align-items: left;
+  gap: 5px;
+  margin: 0;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+
 
 .add-registro-container input[type="text"],
 .add-registro-container input[type="file"],
@@ -214,23 +234,45 @@ button {
 }
 
 .add-registro-btn-add {
-  padding: 8px 12px;
-  background-color: #006400;
-  color: white;
-  border: none;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 4px;
+  background-color: #006400; /* Cor de fundo verde para o botão de adicionar */
+  color: white; /* Cor do texto no botão de adicionar */
   cursor: pointer;
+  font-size: 18px;
 }
 
-.add-registro-btn-remove {
-  background-color: #d33;
-  color: white;
-  border: none;
-  padding: 2px 8px;
-  margin-left: 10px;
-  border-radius: 3px;
+.remove-item {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  background-color: #d33; /* Cor de fundo vermelha para o botão de remover */
+  color: white; /* Cor do texto no botão de remover */
   cursor: pointer;
+  font-size: 18px;
 }
+
+.add-registro-btn-add:hover,
+.remove-item:hover {
+  background-color: #004d00; /* Cor de fundo mais escura ao passar o mouse sobre o botão de adicionar */
+}
+
+.remove-item:hover {
+  background-color: #a00; /* Cor de fundo mais escura ao passar o mouse sobre o botão de remover */
+}
+
+.add-registro-btn-add:focus,
+.remove-item:focus {
+  outline: none;
+}
+
 
 .add-registro-item {
   background-color: #eee;
@@ -242,13 +284,73 @@ button {
 
 .add-registro-form-buttons {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end; /* Alinha à direita */
+  gap: 10px;
   margin-top: 30px;
 }
 
 .add-registro-form-buttons button {
-  width: 48%;
+  width: 120px; /* ou outro valor que preferir */
+  height: 40px;
+  font-weight: bold;
 }
+
+.btn-cancelar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 40px;
+  background-color: #990000;
+  color: #fff;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+
+.add-registro-linha {
+  display: flex;
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.add-registro-campo {
+  flex: 1;
+}
+
+.add-registro-campo select {
+  width: 100%;
+}
+
+.campo-duplo {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px; /* Ajuste o espaço entre os campos */
+}
+
+.campo-item {
+  flex: 1; /* Faz com que cada campo ocupe a mesma largura */
+}
+
+.campo-item label {
+  display: block; /* Garante que o label apareça acima do campo */
+  margin-bottom: 5px; /* Ajusta o espaçamento do label */
+}
+
+.aluno-item,
+.orientador-item {
+  margin-bottom: 15px; /* Aumenta o espaçamento entre os alunos/adicionados */
+  display: flex;
+  justify-content: space-between; /* Garante que o nome e o botão "x" fiquem nas extremidades */
+  align-items: center; /* Alinha verticalmente o conteúdo */
+}
+
+.aluno-item span,
+.orientador-item span {
+  margin-right: 10px; /* Ajusta o espaçamento entre o nome e o botão */
+}
+
 
 
 .search-container {

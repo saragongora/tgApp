@@ -24,10 +24,8 @@
         Faculdade de Tecnologia José Crespo Gonzales
       </div>
 
-
-
      <div class="add-registro-container">
-    <h1>Cadastro de Trabalho Acadêmico</h1>
+    <h2>Cadastro de Trabalho Acadêmico</h2>
 
     <form action="/add-registro" method="POST" enctype="multipart/form-data">
       
@@ -41,18 +39,25 @@
         <label><input type="radio" name="tipo_trabalho" value="ic"> Iniciação Científica</label>
       </div>
 
-      <label for="ano_conclusao">Ano de Conclusão:</label>
-      <select name="ano_conclusao" id="ano_conclusao" required>
-        <% for (let ano = new Date().getFullYear(); ano >= 1980; ano--) { %>
-          <option value="<%= ano %>"><%= ano %></option>
-        <% } %>
-      </select>
-
-      <label for="semestre">Semestre:</label>
-      <select name="semestre" id="semestre" required>
-        <option value="1">1</option>
-        <option value="2">2</option>
-      </select>
+      <div class="add-registro-linha">
+        <div class="add-registro-campo">
+          <label for="ano_conclusao">Ano de Conclusão:</label>
+          <select name="ano_conclusao" id="ano_conclusao" required>
+            <% for (let ano = new Date().getFullYear(); ano >= 1980; ano--) { %>
+              <option value="<%= ano %>"><%= ano %></option>
+            <% } %>
+          </select>
+        </div>
+      
+        <div class="add-registro-campo">
+          <label for="semestre">Semestre:</label>
+          <select name="semestre" id="semestre" required>
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </select>
+        </div>
+      </div>
+      
 
       <label for="curso">Curso:</label>
       <select name="curso" id="curso" required>
@@ -85,14 +90,15 @@
 
       <div class="add-registro-form-buttons">
         <button type="submit">Salvar</button>
-        <a href="/painel"><button type="button">Cancelar</button></a>
+        <a href="/painel" class="btn-cancelar">Cancelar</a>
       </div>
+      
 
     </form>
   </div>
 
     
-      <script src="/js/addRegistro.js"></script>
+      <script src="/js/add_registro.js"></script>
     </body>
     </html>
 

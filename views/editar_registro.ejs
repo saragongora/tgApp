@@ -27,7 +27,7 @@
   </div>
 
   <div class="add-registro-container">
-    <h1>Editar Trabalho Acadêmico</h1>
+    <h2>Editar Trabalho Acadêmico</h2>
 
     <form action="/editar/<%= registro.id_tg %>" method="POST" enctype="multipart/form-data">
       <label for="nome_trabalho">Nome do Trabalho:</label>
@@ -40,18 +40,25 @@
         <label><input type="radio" name="tipo_trabalho" value="ic" <%= registro.tipo === 'ic' ? 'checked' : '' %>> Iniciação Científica</label>
       </div>
 
-      <label for="ano_conclusao">Ano de Conclusão:</label>
-      <select name="ano_conclusao" id="ano_conclusao" required>
-        <% for (let ano = new Date().getFullYear(); ano >= 1980; ano--) { %>
-          <option value="<%= ano %>" <%= registro.ano == ano ? 'selected' : '' %>><%= ano %></option>
-        <% } %>
-      </select>
-
-      <label for="semestre">Semestre:</label>
-      <select name="semestre" id="semestre" required>
-        <option value="1" <%= registro.semestre == 1 ? 'selected' : '' %>>1</option>
-        <option value="2" <%= registro.semestre == 2 ? 'selected' : '' %>>2</option>
-      </select>
+      <div class="campo-duplo">
+        <div class="campo-item">
+          <label for="ano_conclusao">Ano de Conclusão:</label>
+          <select name="ano_conclusao" id="ano_conclusao" required>
+            <% for (let ano = new Date().getFullYear(); ano >= 1980; ano--) { %>
+              <option value="<%= ano %>" <%= registro.ano == ano ? 'selected' : '' %>><%= ano %></option>
+            <% } %>
+          </select>
+        </div>
+      
+        <div class="campo-item">
+          <label for="semestre">Semestre:</label>
+          <select name="semestre" id="semestre" required>
+            <option value="1" <%= registro.semestre == 1 ? 'selected' : '' %>>1</option>
+            <option value="2" <%= registro.semestre == 2 ? 'selected' : '' %>>2</option>
+          </select>
+        </div>
+      </div>
+      
 
       <label for="curso">Curso:</label>
       <select name="curso" id="curso" required>
@@ -104,6 +111,6 @@
     </form>
   </div>
 
-  <script src="/js/addRegistro.js"></script>
+  <script src="/js/add_registro.js"></script>
 </body>
 </html>

@@ -71,7 +71,7 @@ app.get('/painel', (req, res) => {
 // Tela de adicionar novo registro
 app.get('/add-registro', (req, res) => {
   if (req.session.logado) {
-    res.render('addRegistro');
+    res.render('add_registro');
   } else {
     res.redirect('/login');
   }
