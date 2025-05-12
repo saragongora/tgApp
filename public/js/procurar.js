@@ -1,9 +1,9 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const searchIcon = document.getElementById('searchIcon');
   const searchForm = document.getElementById('searchForm');
 
   if (searchIcon && searchForm) {
-    searchIcon.addEventListener('click', function() {
+    searchIcon.addEventListener('click', function () {
       searchForm.submit();
     });
   }
@@ -16,3 +16,14 @@ document.addEventListener('DOMContentLoaded', function() {
     searchArea.classList.add('top');
   }
 });
+
+function abrirModalFiltro() {
+    document.getElementById("modal-filtro").style.display = "flex";
+  }
+
+  function fecharModalFiltro(event) {
+    const modal = document.getElementById("modal-filtro");
+    if (!event || event.target === modal) {
+      modal.style.display = "none";
+    }
+  }

@@ -38,6 +38,46 @@
       </span>      
     </form>
   </div>
+
+  <% if (buscaRealizada && termo && resultados && resultados.length > 0) { %>
+  <div class="linha-mensagem">
+    <p class="mensagem-resultado">
+      Resultados de pesquisa para: <strong><%= termo %></strong>
+    </p>
+    <a href="#" class="link-filtrar" onclick="abrirModalFiltro()">Filtrar</a>
+  </div>
+<% } %>
+
+<!-- Modal de filtro -->
+<div id="modal-filtro" class="modal-filtro-overlay" onclick="fecharModalFiltro(event)">
+  <div class="modal-filtro-conteudo">
+    <h3>Filtrar resultados</h3>
+    <form>
+      <label>Ano:
+        <input type="number" name="ano" min="2000" max="2100">
+      </label>
+      <label>Semestre:
+        <select name="semestre">
+          <option value="1">1º</option>
+          <option value="2">2º</option>
+        </select>
+      </label>
+      <label>Curso:
+        <input type="text" name="curso">
+      </label>
+      <label>Tipo de Projeto:
+        <input type="text" name="tipo">
+      </label>
+      <div class="botoes-modal">
+        <button type="submit">Aplicar Filtro</button>
+        <button type="button" onclick="fecharModalFiltro()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
   
 
   <div class="resultados">
@@ -80,8 +120,6 @@
     <% } %>
   </div>
   
-
-
   
   <script src="/js/procurar.js"></script>
 </body>
