@@ -78,7 +78,9 @@
         <% registro.orientadores.forEach((orientador, index) => { %>
           <div class="orientador-item">
             <span><%= orientador %></span>
-            <button type="button" class="remove-item" onclick="removerItem('orientadoresContainer', <%= index %>)">x</button>
+            
+            <button type="button" class="remove-item" onclick="removerItem('orientadoresContainer', '<%= index %>')">x</button>
+
           </div>
         <% }) %>
       </div>
@@ -92,7 +94,9 @@
         <% registro.alunos.forEach((aluno, index) => { %>
           <div class="aluno-item">
             <span><%= aluno %></span>
-            <button type="button" class="remove-item" onclick="removerItem('alunosContainer', <%= index %>)">x</button>
+            
+            <button type="button" class="remove-item" onclick="removerItem('alunosContainer', '<%= index %>')">x</button>
+
           </div>
         <% }) %>
       </div>
