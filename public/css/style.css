@@ -217,43 +217,53 @@ button {
 
 .add-registro-input-group {
   display: flex;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.add-registro-btn-add {
-  width: 30px;
-  height: 30px;
-  display: flex;
-  justify-content: center;
   align-items: center;
-  border-radius: 4px;
-  background-color: #006400; 
-  color: white; 
-  cursor: pointer;
-  font-size: 18px;
+  gap: 8px;
 }
 
+.add-registro-input-group input {
+  flex: 1;
+  height: 35px;
+  padding: 5px 10px;
+  font-size: 14px;
+  line-height: normal;
+  margin: 0;
+  border: 1px solid #ccc;
+}
+
+
+
+.add-registro-btn-add,
 .remove-item {
-  width: 30px;
-  height: 30px;
+  height: 35px;
+  padding: 0 12px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  border-radius: 4px;
-  background-color: #d33;
-  color: white; 
-  cursor: pointer;
-  font-size: 18px;
+  justify-content: center;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  margin: 0;             /* <-- remove qualquer margem implícita */
+  line-height: normal;   /* <-- importante para evitar deslocamentos */
+  vertical-align: middle;
+  font-size: 14px;       /* <-- igual ao input */
+  border: 1px solid #ccc; /* opcional para visual igual */
+  margin-top: 6px;
 }
 
-.add-registro-btn-add:hover,
-.remove-item:hover {
-  background-color: #004d00; 
+.add-registro-btn-add{
+  background-color: #004d00;
+}
+
+.remove-item{
+  background-color: #a80000;
+}
+
+.add-registro-btn-add:hover{
+  background-color: #003900; 
 }
 
 .remove-item:hover {
-  background-color: #a00;
+  background-color: rgb(100, 0, 0)000;
 }
 
 .add-registro-btn-add:focus,
@@ -552,4 +562,58 @@ button {
   .card-buttons button {
     font-size: 1rem;
   }
+}
+
+
+
+@media (max-width: 600px) {
+  .add-registro-container {
+    width: 90%;
+    padding: 15px;
+    font-size: 14px;
+  }
+
+  .add-registro-radio-group {
+    flex-direction: column;
+    gap: 2px;
+    align-items: self-start;
+  }
+
+  .add-registro-linha {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .add-registro-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  }
+
+  .add-registro-form-buttons {
+    align-items: stretch;
+  }
+
+  .add-registro-form-buttons button,
+  .btn-cancelar {
+    width: 35%;
+  }
+
+  .add-registro-btn-add,
+  .remove-item {
+    width: 10%;
+    font-size: 16px;
+  }
+
+  .add-registro-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-header.back {
+      background-image: url('/images/icon_voltar.png');
+    }
 }
