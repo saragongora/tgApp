@@ -197,8 +197,7 @@ app.get('/editar/:id', (req, res) => {
   });
 });
 
-// POST para salvar edição
-app.post('/editar/:id', upload.single('arquivo'), (req, res) => {
+app.post('/editar/:id', upload.single('arquivo'), async (req, res) => {
   const idTg = req.params.id;
   const {
     nome_trabalho,
@@ -214,68 +213,73 @@ app.post('/editar/:id', upload.single('arquivo'), (req, res) => {
   const orientadoresArray = Array.isArray(orientadores) ? orientadores : [orientadores];
   const arquivo = req.file ? req.file.buffer : null;
 
-  const updateSql = `
-    UPDATE tg SET tipo = ?, nome_tg = ?, curso = ?, ano = ?, semestre = ?
-    ${arquivo ? ', arquivo = ?' : ''}
-    WHERE id_tg = ?
-  `;
-  const updateValues = arquivo
-    ? [tipo_trabalho, nome_trabalho, curso, ano_conclusao, semestre, arquivo, idTg]
-    : [tipo_trabalho, nome_trabalho, curso, ano_conclusao, semestre, idTg];
+  const queryPromise = (query, params = []) =>
+    new Promise((resolve, reject) =>
+      db.query(query, params, (err, result) => (err ? reject(err) : resolve(result)))
+    );
 
-  db.query(updateSql, updateValues, (err) => {
-    if (err) return res.send('Erro ao atualizar trabalho: ' + err);
+  try {
+    // Atualiza TG
+    const updateSql = `
+      UPDATE tg SET tipo = ?, nome_tg = ?, curso = ?, ano = ?, semestre = ?
+      ${arquivo ? ', arquivo = ?' : ''}
+      WHERE id_tg = ?
+    `;
+    const updateValues = arquivo
+      ? [tipo_trabalho, nome_trabalho, curso, ano_conclusao, semestre, arquivo, idTg]
+      : [tipo_trabalho, nome_trabalho, curso, ano_conclusao, semestre, idTg];
 
-    // Atualizar alunos e orientadores
-    db.query(`DELETE FROM aluno_tg WHERE id_tg = ?`, [idTg]);
-    db.query(`DELETE FROM orientador_tg WHERE id_tg = ?`, [idTg]);
+    await queryPromise(updateSql, updateValues);
 
-    alunosArray.forEach(nome => {
-      if (!nome.trim()) return;
-    
-      db.query(`SELECT id_aluno FROM aluno WHERE nome_aluno = ?`, [nome], (err, results) => {
-        if (err) return console.log('Erro ao buscar aluno:', err);
-    
-        if (results.length > 0) {
-          // Já existe
-          const idAluno = results[0].id_aluno;
-          db.query(`INSERT INTO aluno_tg (id_aluno, id_tg) VALUES (?, ?)`, [idAluno, idTg]);
-        } else {
-          // Não existe → cria
-          db.query(`INSERT INTO aluno (nome_aluno) VALUES (?)`, [nome], (err, result) => {
-            if (err) return console.log('Erro ao inserir aluno:', err);
-            const idAluno = result.insertId;
-            db.query(`INSERT INTO aluno_tg (id_aluno, id_tg) VALUES (?, ?)`, [idAluno, idTg]);
-          });
-        }
-      });
-    });
-    
-    orientadoresArray.forEach(nome => {
-      if (!nome.trim()) return;
-    
-      db.query(`SELECT id_orientador FROM orientador WHERE nome_orientador = ?`, [nome], (err, results) => {
-        if (err) return console.log('Erro ao buscar orientador:', err);
-    
-        if (results.length > 0) {
-          // Já existe
-          const idOrientador = results[0].id_orientador;
-          db.query(`INSERT INTO orientador_tg (id_orientador, id_tg) VALUES (?, ?)`, [idOrientador, idTg]);
-        } else {
-          // Não existe → cria
-          const idOrientador = uuidv4();
-          db.query(`INSERT INTO orientador (id_orientador, nome_orientador) VALUES (?, ?)`, [idOrientador, nome], (err) => {
-            if (err) return console.log('Erro ao inserir orientador:', err);
-            db.query(`INSERT INTO orientador_tg (id_orientador, id_tg) VALUES (?, ?)`, [idOrientador, idTg]);
-          });
-        }
-      });
-    });
-    
+    // Limpa antigos vínculos
+    await queryPromise(`DELETE FROM aluno_tg WHERE id_tg = ?`, [idTg]);
+    await queryPromise(`DELETE FROM orientador_tg WHERE id_tg = ?`, [idTg]);
+
+    // Adiciona alunos novamente
+    for (const nome of alunosArray) {
+      if (!nome.trim()) continue;
+
+      const resultado = await queryPromise(`SELECT id_aluno FROM aluno WHERE nome_aluno = ?`, [nome]);
+      let idAluno;
+
+      if (resultado.length > 0) {
+        idAluno = resultado[0].id_aluno;
+      } else {
+        const insert = await queryPromise(`INSERT INTO aluno (nome_aluno) VALUES (?)`, [nome]);
+        idAluno = insert.insertId;
+      }
+
+      await queryPromise(`INSERT INTO aluno_tg (id_aluno, id_tg) VALUES (?, ?)`, [idAluno, idTg]);
+    }
+
+    // Adiciona orientadores novamente
+    for (const nome of orientadoresArray) {
+      if (!nome.trim()) continue;
+
+      const resultado = await queryPromise(`SELECT id_orientador FROM orientador WHERE nome_orientador = ?`, [nome]);
+      let idOrientador;
+
+      if (resultado.length > 0) {
+        idOrientador = resultado[0].id_orientador;
+      } else {
+        idOrientador = uuidv4();
+        await queryPromise(`INSERT INTO orientador (id_orientador, nome_orientador) VALUES (?, ?)`, [idOrientador, nome]);
+      }
+
+      await queryPromise(`INSERT INTO orientador_tg (id_orientador, id_tg) VALUES (?, ?)`, [idOrientador, idTg]);
+    }
+
+    // Agora sim: remove os órfãos
+    await queryPromise(`DELETE FROM aluno WHERE id_aluno NOT IN (SELECT DISTINCT id_aluno FROM aluno_tg)`);
+    await queryPromise(`DELETE FROM orientador WHERE id_orientador NOT IN (SELECT DISTINCT id_orientador FROM orientador_tg)`);
 
     res.redirect('/painel');
-  });
+  } catch (err) {
+    console.error('Erro ao editar registro:', err);
+    res.send('Erro ao editar registro.');
+  }
 });
+
 
 
 
