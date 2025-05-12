@@ -93,10 +93,12 @@ app.post('/add-registro', upload.single('arquivo'), (req, res) => {
 
   const alunosArray = Array.isArray(alunos) ? alunos : [alunos];
   const orientadoresArray = Array.isArray(orientadores) ? orientadores : [orientadores];
-  const arquivo = req.file.buffer;
 
-  const sqlTg = `INSERT INTO tg (tipo, nome_tg, curso, ano, semestre, arquivo) VALUES (?, ?, ?, ?, ?, ?)`;
-  const tgValues = [tipo_trabalho, nome_trabalho, curso, ano_conclusao, semestre, arquivo];
+  const arquivo = req.file ? req.file.buffer : null;
+  const nomeArquivo = req.file ? req.file.originalname : null;
+
+  const sqlTg = `INSERT INTO tg (tipo, nome_tg, curso, ano, semestre, arquivo, nome_arquivo) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+  const tgValues = [tipo_trabalho, nome_trabalho, curso, ano_conclusao, semestre, arquivo, nomeArquivo];
 
   db.query(sqlTg, tgValues, (err, result) => {
     if (err) return res.send('Erro ao inserir trabalho: ' + err);
@@ -212,6 +214,7 @@ app.post('/editar/:id', upload.single('arquivo'), async (req, res) => {
   const alunosArray = Array.isArray(alunos) ? alunos : [alunos];
   const orientadoresArray = Array.isArray(orientadores) ? orientadores : [orientadores];
   const arquivo = req.file ? req.file.buffer : null;
+  const nomeArquivo = req.file ? req.file.originalname : null;
 
   const queryPromise = (query, params = []) =>
     new Promise((resolve, reject) =>
@@ -222,11 +225,11 @@ app.post('/editar/:id', upload.single('arquivo'), async (req, res) => {
     // Atualiza TG
     const updateSql = `
       UPDATE tg SET tipo = ?, nome_tg = ?, curso = ?, ano = ?, semestre = ?
-      ${arquivo ? ', arquivo = ?' : ''}
+      ${arquivo ? ', arquivo = ?, nome_arquivo = ?' : ''}
       WHERE id_tg = ?
     `;
     const updateValues = arquivo
-      ? [tipo_trabalho, nome_trabalho, curso, ano_conclusao, semestre, arquivo, idTg]
+      ? [tipo_trabalho, nome_trabalho, curso, ano_conclusao, semestre, arquivo, nomeArquivo, idTg]
       : [tipo_trabalho, nome_trabalho, curso, ano_conclusao, semestre, idTg];
 
     await queryPromise(updateSql, updateValues);
@@ -279,7 +282,6 @@ app.post('/editar/:id', upload.single('arquivo'), async (req, res) => {
     res.send('Erro ao editar registro.');
   }
 });
-
 
 
 

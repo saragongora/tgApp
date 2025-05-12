@@ -41,3 +41,5 @@ CREATE TABLE orientador_tg (
     FOREIGN KEY (id_orientador) REFERENCES orientador(id_orientador) ON DELETE CASCADE,
     FOREIGN KEY (id_tg) REFERENCES tg(id_tg) ON DELETE CASCADE
 );
+
+
