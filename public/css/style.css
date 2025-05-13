@@ -447,9 +447,9 @@ button {
   }
 
   .search-bar {
-    width: 90%; 
-    max-width: 100%; 
     padding: 10px 0; 
+    width: 100%;        /* Garante que ocupe o espaço permitido */
+    max-width: 90%; 
   }
 
   .search-bar input {
@@ -462,7 +462,11 @@ button {
   .search-bar .search-icon {
     width: 20px; 
     height: auto; 
-    right: 10px; 
+    right: 10px;
+  }
+
+  .search-container.top {
+    align-items: center; /* Corrige o desalinhamento horizontal */
   }
 }
 
@@ -608,7 +612,7 @@ button {
     display: block;
     text-align: center;
     width: 100%; /* ocupa toda a largura para centralizar melhor */
-    margin-top: 8px; /* espaço abaixo do texto */
+    margin-top: 0px; /* espaço abaixo do texto */
     font-size: 14px;
   }
 
@@ -652,17 +656,20 @@ button {
 }
 
 .modal-filtro-conteudo {
-  background: #fff;
-  padding: 20px;
+ background: #fff;
+  padding: 30px;
   border-radius: 10px;
-  max-width: 400px;
-  width: 90%;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  animation: slideIn 0.3s ease;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
 }
 
 .modal-filtro-conteudo h3 {
   margin-top: 0;
+  margin-bottom: 20px;
+  color: #990000;
+  text-align: start;
 }
 
 .modal-filtro-conteudo form label {
@@ -670,10 +677,39 @@ button {
   margin: 10px 0;
 }
 
+.modal-filtro-conteudo label {
+  font-weight: bold;
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.modal-filtro-conteudo select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+/* Agrupamento de campos lado a lado */
+.campo-duplo {
+  display: flex;
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.campo-item {
+  flex: 1;
+}
+
+
+
 .botoes-modal {
   display: flex;
-  justify-content: space-between;
+  justify-content:end;
   margin-top: 15px;
+  gap: 10px;
 }
 
 .botoes-modal button {
@@ -681,15 +717,12 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-}
-
-.botoes-modal button[type="submit"] {
-  background-color: #007bff;
   color: #fff;
+  background-color: #990000;
 }
 
-.botoes-modal button[type="button"] {
-  background-color: #ccc;
+.botoes-modal button:hover{
+  background-color: #5d0101;
 }
 
 /* Animações */
@@ -702,6 +735,8 @@ button {
   from { transform: translateY(-20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+
+
 
 
 
