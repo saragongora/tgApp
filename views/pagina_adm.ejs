@@ -40,16 +40,19 @@
     </form>
   </div>
 
-  <% if (buscaRealizada && termo && resultados && resultados.length> 0) { %>
-    <div class="linha-mensagem">
-      <p class="mensagem-resultado">
-        Resultados de pesquisa para: <strong>
-          <%= termo %>
-        </strong>
-      </p>
-      <a href="#" class="link-filtrar" onclick="abrirModalFiltro()">Filtrar</a>
-    </div>
-    <% } %>
+  <% if (buscaRealizada && termo) { %>
+  <div class="linha-mensagem">
+    <p class="mensagem-resultado">
+      Resultados de pesquisa para: <strong><%= termo %></strong>
+    </p>
+    <a href="#" class="link-filtrar" onclick="abrirModalFiltro()">Filtrar</a>
+  </div>
+<% } %>
+
+
+
+
+
       <!-- Modal de filtro -->
       <div id="modal-filtro" class="modal-filtro-overlay" onclick="fecharModalFiltro(event)">
         <div class="modal-filtro-conteudo" onclick="event.stopPropagation()">
@@ -164,9 +167,7 @@
                       </button>
                       </form>
                 </div>
-
               </div>
-
             </div>
 
 
