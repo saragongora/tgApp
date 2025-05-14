@@ -135,6 +135,8 @@ app.post('/add-registro', upload.single('arquivo'), (req, res) => {
     res.redirect('/painel');
   });
 });
+
+
 app.get('/buscar', (req, res) => {
   const termo = req.query.termo;
 
@@ -180,7 +182,16 @@ app.get('/buscar', (req, res) => {
       orientadores: r.orientadores ? r.orientadores.split(',') : []
     }));
 
-    res.render('pagina_adm', { resultados: registros, buscaRealizada: true, termo });
+    res.render('pagina_adm', {
+      resultados: registros,
+      buscaRealizada: true,
+      termo,
+      ano_conclusao: req.query.ano_conclusao || '',
+      semestre: req.query.semestre || '',
+      curso: req.query.curso || '',
+      tipo_trabalho: req.query.tipo_trabalho || ''
+    });
+
   });
 });
 
@@ -313,36 +324,12 @@ app.post('/excluir/:id', (req, res) => {
   });
 });
 
+
+
 app.get('/filtro', (req, res) => {
   const { termo, ano_conclusao, semestre, curso, tipo_trabalho } = req.query;
-  const likeTerm = `%${termo || ''}%`;
 
-  let filtros = [];
-  let params = [likeTerm, likeTerm, likeTerm];
-
-  if (ano_conclusao) {
-    filtros.push('tg.ano = ?');
-    params.push(ano_conclusao);
-  }
-
-  if (semestre) {
-    filtros.push('tg.semestre = ?');
-    params.push(semestre);
-  }
-
-  if (curso) {
-    filtros.push('tg.curso = ?');
-    params.push(curso);
-  }
-
-  if (tipo_trabalho) {
-    filtros.push('tg.tipo = ?');
-    params.push(tipo_trabalho);
-  }
-
-  const whereFiltro = filtros.length > 0 ? 'AND ' + filtros.join(' AND ') : '';
-
-  const query = `
+  let query = `
     SELECT tg.*, 
       GROUP_CONCAT(DISTINCT aluno.nome_aluno) AS alunos,
       GROUP_CONCAT(DISTINCT orientador.nome_orientador) AS orientadores
@@ -351,36 +338,49 @@ app.get('/filtro', (req, res) => {
     LEFT JOIN aluno ON aluno.id_aluno = aluno_tg.id_aluno
     LEFT JOIN orientador_tg ON tg.id_tg = orientador_tg.id_tg
     LEFT JOIN orientador ON orientador.id_orientador = orientador_tg.id_orientador
-    WHERE tg.id_tg IN (
-      SELECT DISTINCT tg.id_tg
-      FROM tg
-      LEFT JOIN aluno_tg ON tg.id_tg = aluno_tg.id_tg
-      LEFT JOIN aluno ON aluno.id_aluno = aluno_tg.id_aluno
-      LEFT JOIN orientador_tg ON tg.id_tg = orientador_tg.id_tg
-      LEFT JOIN orientador ON orientador.id_orientador = orientador_tg.id_orientador
-      WHERE 
-        tg.nome_tg LIKE ? OR 
-        aluno.nome_aluno LIKE ? OR 
-        orientador.nome_orientador LIKE ?
-    )
-    ${whereFiltro}
-    GROUP BY tg.id_tg
+    WHERE (tg.nome_tg LIKE ? OR aluno.nome_aluno LIKE ? OR orientador.nome_orientador LIKE ?)
   `;
+
+  const params = [`%${termo}%`, `%${termo}%`, `%${termo}%`];
+
+  if (ano_conclusao) {
+    query += ' AND tg.ano = ?';
+    params.push(ano_conclusao);
+  }
+
+  if (semestre) {
+    query += ' AND tg.semestre = ?';
+    params.push(semestre);
+  }
+
+  if (curso) {
+    query += ' AND tg.curso = ?';
+    params.push(curso);
+  }
+
+  if (tipo_trabalho) {
+    query += ' AND tg.tipo = ?';
+    params.push(tipo_trabalho);
+  }
+
+  query += ' GROUP BY tg.id_tg';
 
   db.query(query, params, (err, results) => {
     if (err) {
-      console.error('Erro ao aplicar filtro:', err);
-      return res.send('Erro ao aplicar filtro');
+      console.error(err);
+      return res.send('Erro ao buscar registros');
     }
 
-    const registros = results.map(r => ({
-      ...r,
-      alunos: r.alunos ? r.alunos.split(',') : [],
-      orientadores: r.orientadores ? r.orientadores.split(',') : []
-    }));
+    const formatar = linha => ({
+      ...linha,
+      alunos: linha.alunos ? linha.alunos.split(',') : [],
+      orientadores: linha.orientadores ? linha.orientadores.split(',') : [],
+    });
+
+    const resultados = results.map(formatar);
 
     res.render('pagina_adm', {
-      resultados: registros,
+      resultados,
       buscaRealizada: true,
       termo,
       ano_conclusao,
@@ -388,7 +388,6 @@ app.get('/filtro', (req, res) => {
       curso,
       tipo_trabalho
     });
-
   });
 });
 

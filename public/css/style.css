@@ -725,6 +725,17 @@ button {
   background-color: #5d0101;
 }
 
+.limpar-container {
+  text-align: right;
+  margin-top: 12px; /* espaçamento do container em relação ao item acima */
+}
+
+.btn-limpar {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.7);
+  text-decoration: none;
+}
+
 /* Animações */
 @keyframes fadeIn {
   from { opacity: 0; }
