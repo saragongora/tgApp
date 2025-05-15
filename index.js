@@ -141,7 +141,16 @@ app.get('/buscar', (req, res) => {
   const termo = req.query.termo;
 
   if (!termo) {
-    return res.render('pagina_adm', { resultados: [], buscaRealizada: false });
+    const view = req.session.logado ? 'pagina_adm' : 'home';
+    return res.render(view, {
+      resultados: [],
+      buscaRealizada: false,
+      termo: '',
+      ano_conclusao: '',
+      semestre: '',
+      curso: '',
+      tipo_trabalho: ''
+    });
   }
 
   const likeTerm = `%${termo}%`;
@@ -182,7 +191,9 @@ app.get('/buscar', (req, res) => {
       orientadores: r.orientadores ? r.orientadores.split(',') : []
     }));
 
-    res.render('pagina_adm', {
+    const view = req.session.logado ? 'pagina_adm' : 'home';
+
+    res.render(view, {
       resultados: registros,
       buscaRealizada: true,
       termo,
@@ -191,11 +202,8 @@ app.get('/buscar', (req, res) => {
       curso: req.query.curso || '',
       tipo_trabalho: req.query.tipo_trabalho || ''
     });
-
   });
 });
-
-
 
 // Rota GET para carregar formulário de edição
 app.get('/editar/:id', (req, res) => {
@@ -312,7 +320,7 @@ app.post('/editar/:id', upload.single('arquivo'), async (req, res) => {
 
 
 
-// Excluir registro
+//Excluir registro
 app.post('/excluir/:id', (req, res) => {
   const idTg = req.params.id;
 
@@ -325,23 +333,36 @@ app.post('/excluir/:id', (req, res) => {
 });
 
 
-
+// Filtrar 
 app.get('/filtro', (req, res) => {
   const { termo, ano_conclusao, semestre, curso, tipo_trabalho } = req.query;
+  const view = req.session.logado ? 'pagina_adm' : 'home';
 
   let query = `
     SELECT tg.*, 
-      GROUP_CONCAT(DISTINCT aluno.nome_aluno) AS alunos,
-      GROUP_CONCAT(DISTINCT orientador.nome_orientador) AS orientadores
+           GROUP_CONCAT(DISTINCT aluno.nome_aluno SEPARATOR ', ') AS alunos, 
+           GROUP_CONCAT(DISTINCT orientador.nome_orientador SEPARATOR ', ') AS orientadores 
     FROM tg
     LEFT JOIN aluno_tg ON tg.id_tg = aluno_tg.id_tg
     LEFT JOIN aluno ON aluno.id_aluno = aluno_tg.id_aluno
     LEFT JOIN orientador_tg ON tg.id_tg = orientador_tg.id_tg
     LEFT JOIN orientador ON orientador.id_orientador = orientador_tg.id_orientador
-    WHERE (tg.nome_tg LIKE ? OR aluno.nome_aluno LIKE ? OR orientador.nome_orientador LIKE ?)
+    WHERE 1=1
   `;
 
-  const params = [`%${termo}%`, `%${termo}%`, `%${termo}%`];
+  const params = [];
+
+  if (termo) {
+    query += `
+      AND (
+        tg.nome_tg LIKE ? OR 
+        aluno.nome_aluno LIKE ? OR 
+        orientador.nome_orientador LIKE ?
+      )
+    `;
+    const termoLike = `%${termo}%`;
+    params.push(termoLike, termoLike, termoLike);
+  }
 
   if (ano_conclusao) {
     query += ' AND tg.ano = ?';
@@ -363,24 +384,22 @@ app.get('/filtro', (req, res) => {
     params.push(tipo_trabalho);
   }
 
-  query += ' GROUP BY tg.id_tg';
+  query += ' GROUP BY tg.id_tg ORDER BY tg.ano DESC, tg.semestre DESC';
 
   db.query(query, params, (err, results) => {
     if (err) {
-      console.error(err);
+      console.error('Erro ao buscar registros:', err);
       return res.send('Erro ao buscar registros');
     }
 
-    const formatar = linha => ({
+    const registros = results.map(linha => ({
       ...linha,
-      alunos: linha.alunos ? linha.alunos.split(',') : [],
-      orientadores: linha.orientadores ? linha.orientadores.split(',') : [],
-    });
+      alunos: linha.alunos ? linha.alunos.split(', ') : [],
+      orientadores: linha.orientadores ? linha.orientadores.split(', ') : [],
+    }));
 
-    const resultados = results.map(formatar);
-
-    res.render('pagina_adm', {
-      resultados,
+    res.render(view, {
+      resultados: registros,
       buscaRealizada: true,
       termo,
       ano_conclusao,
@@ -392,7 +411,18 @@ app.get('/filtro', (req, res) => {
 });
 
 
-
+// Página pública (sem login)
+app.get('/home', (req, res) => {
+  res.render('home', {
+    resultados: [],
+    buscaRealizada: false,
+    termo: '',
+    ano_conclusao: '',
+    semestre: '',
+    curso: '',
+    tipo_trabalho: ''
+  });
+});
 
 // Iniciar servidor
 app.listen(3000, () => {

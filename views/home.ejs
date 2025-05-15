@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Home</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/search.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+  <div class="header">
+    <a href="/home">
+      <img src="/images/logoFatec.png" alt="Logo Fatec" style="height: 40px;">
+    </a>
+  </div>
+
+  <div class="sub-header">
+    Faculdade de Tecnologia José Crespo Gonzales
+  </div>
+
+  <div class="search-container" id="searchArea">
+    <label for="termo">BUSCAR POR TRABALHOS DE GRADUAÇÃO</label>
+
+    <p class="sub-text">Pesquise por trabalhos, alunos ou orientadores</p>
+
+    <form action="/buscar" method="GET" class="search-bar" id="searchForm">
+      <input type="text" id="termo" name="termo" required>
+      <span class="search-icon" id="searchIcon">
+        <img src="/images/icon_lupa.png" alt="Ícone de Lupa" />
+      </span>
+    </form>
+  </div>
+
+  <% if (buscaRealizada && termo) { %>
+    <div class="linha-mensagem">
+      <p class="mensagem-resultado">
+        Resultados de pesquisa para: <strong>
+          <%= termo %>
+        </strong>
+      </p>
+      <a href="#" class="link-filtrar" onclick="abrirModalFiltro()">Filtrar</a>
+    </div>
+    <% } %>
+
+      <!-- Modal de filtro -->
+      <div id="modal-filtro" class="modal-filtro-overlay" onclick="fecharModalFiltro(event)">
+        <div class="modal-filtro-conteudo" onclick="event.stopPropagation()">
+          <h3>Filtrar resultados</h3>
+          <form method="GET" action="/filtro">
+            <input type="hidden" name="termo" value="<%= termo %>">
+
+            <div class="campo-duplo">
+              <div class="campo-item">
+                <!-- Ano de Conclusão -->
+                <label for="ano_conclusao">Ano:</label>
+                <select name="ano_conclusao" id="ano_conclusao">
+                  <option value="">--</option>
+                  <script>
+                    const selectAno = document.getElementById('ano_conclusao');
+                    const anoAtual = new Date().getFullYear();
+                    const anoSelecionado = "<%= ano_conclusao || '' %>";
+
+                    for (let ano = anoAtual; ano >= 1980; ano--) {
+                      const option = document.createElement('option');
+                      option.value = ano;
+                      option.textContent = ano;
+                      if (ano == anoSelecionado) {
+                        option.selected = true;
+                      }
+                      selectAno.appendChild(option);
+                    }
+                  </script>
+                </select>
+              </div>
+
+              <!-- Semestre -->
+              <div class="campo-item">
+                <label for="semestre">Semestre:</label>
+                <select name="semestre" id="semestre">
+                  <option value="">--</option>
+                  <option value="1" <%=semestre==='1' ? 'selected' : '' %>>1</option>
+                  <option value="2" <%=semestre==='2' ? 'selected' : '' %>>2</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Curso -->
+            <label for="curso">Curso:</label>
+            <select name="curso" id="curso">
+              <option value="">--</option>
+              <option value="Análise e Desenvolvimento de Sistemas" <%=curso==='Análise e Desenvolvimento de Sistemas'
+                ? 'selected' : '' %>>Análise e Desenvolvimento de Sistemas</option>
+              <option value="Polímeros" <%=curso==='Polímeros' ? 'selected' : '' %>>Polímeros</option>
+              <option value="Logística" <%=curso==='Logística' ? 'selected' : '' %>>Logística</option>
+              <option value="Gestão Empresarial" <%=curso==='Gestão Empresarial' ? 'selected' : '' %>>Gestão Empresarial
+              </option>
+              <option value="Manufatura Avançada" <%=curso==='Manufatura Avançada' ? 'selected' : '' %>>Manufatura
+                Avançada</option>
+              <option value="Projetos Mecânicos" <%=curso==='Projetos Mecânicos' ? 'selected' : '' %>>Projetos Mecânicos
+              </option>
+              <option value="Gestão da Qualidade" <%=curso==='Gestão da Qualidade' ? 'selected' : '' %>>Gestão da
+                Qualidade</option>
+              <option value="Mecatrônica Industrial" <%=curso==='Mecatrônica Industrial' ? 'selected' : '' %>
+                >Mecatrônica Industrial</option>
+            </select>
+
+            <!-- Tipo de Trabalho -->
+            <label for="tipo_trabalho">Tipo de Trabalho:</label>
+            <select name="tipo_trabalho" id="tipo_trabalho">
+              <option value="">--</option>
+              <option value="pi" <%=tipo_trabalho==="pi" ? 'selected' : '' %>>Projeto Integrador</option>
+              <option value="tg" <%=tipo_trabalho==="tg" ? 'selected' : '' %>>TG</option>
+              <option value="ic" <%=tipo_trabalho==="ic" ? 'selected' : '' %>>Iniciação Científica</option>
+            </select>
+            <div class="limpar-container">
+              <a href="/buscar?termo=<%= termo %>" class="btn-limpar">Limpar filtros</a>
+            </div>
+
+            <!-- Botões -->
+            <div class="botoes-modal">
+              <button type="submit">Aplicar Filtro</button>
+
+              <button type="button" onclick="fecharModalFiltro()">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+
+      <div class="resultados">
+        <% if (resultados && resultados.length> 0) { %>
+          <% resultados.forEach(registro=> { %>
+            <div class="card-result">
+              <div class="card-header">
+                <p class="titulo"><strong>PI - <%= registro.nome_tg %></strong></p>
+                <span class="ano-semestre">
+                  <%= registro.ano %>-<%= registro.semestre %>
+                </span>
+              </div>
+
+              <div class="card-body-footer">
+                <div class="card-texts">
+                  <p>Orientador: <%= registro.orientadores.join(', ') %></p>
+                  <p>Alunos: <%= registro.alunos.join(' , ') %></p>
+                  <p>Curso: <%= registro.curso %></p>
+                </div>
+            </div>
+      </div>
+
+          
+            
+      
+
+            <% }) %>
+              <% } else { %>
+                <% if (buscaRealizada) { %>
+                  <p>Nenhum resultado encontrado.</p>
+                  <% } %>
+                    <% } %>
+      </div>
+
+      <script src="/js/procurar.js"></script>
+</body>
+
+</html>
