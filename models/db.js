@@ -1,10 +1,12 @@
 const mysql = require('mysql2');
 
 const connection = mysql.createConnection({
-  host: 'localhost',        // ou o IP do seu banco
-  user: 'root',             // ou outro usuário
-  password: 'jeanali',    // sua senha do MySQL
-  database: 'tgapp' // o nome do banco que você criou
+  host: 'localhost',        
+  user: 'root',             
+  password: 'jeanali',    
+  database: 'tgapp',
+  charset: 'utf8mb4'  
+
 });
 
 connection.connect((err) => {

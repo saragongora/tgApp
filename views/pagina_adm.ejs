@@ -140,7 +140,7 @@
           <% resultados.forEach(registro=> { %>
             <div class="card-result">
               <div class="card-header">
-                <p class="titulo"><strong>PI - <%= registro.nome_tg %></strong></p>
+                <p class="titulo"><strong><%= registro.tipo.toUpperCase() %> - <%= registro.nome_tg %></strong></p>
                 <span class="ano-semestre">
                   <%= registro.ano %>-<%= registro.semestre %>
                 </span>

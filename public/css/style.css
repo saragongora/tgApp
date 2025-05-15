@@ -804,11 +804,6 @@ button {
 }
 
 
-.card-result {
-  position: relative;
-  padding-bottom: 40px; /* espaço para o botão */
-}
-
 .download-btn {
   position: absolute;
   bottom: 10px;
