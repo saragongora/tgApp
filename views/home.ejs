@@ -52,7 +52,6 @@
           <h3>Filtrar resultados</h3>
           <form method="GET" action="/filtro">
             <input type="hidden" name="termo" value="<%= termo %>">
-
             <div class="campo-duplo">
               <div class="campo-item">
                 <!-- Ano de Conclusão -->
@@ -148,12 +147,16 @@
                   <p>Alunos: <%= registro.alunos.join(' , ') %></p>
                   <p>Curso: <%= registro.curso %></p>
                 </div>
-            </div>
-      </div>
+              </div>
 
-          
-            
-      
+                <!-- Botão de download -->
+              <div class="download-btn">
+                <a href="/download/<%= registro.id_tg %>" title="Baixar PDF">
+                  <img src="/images/icon_baixar.png" alt="Baixar" width="24" height="24">
+                </a>
+              </div>
+            </div>
+
 
             <% }) %>
               <% } else { %>
@@ -161,9 +164,9 @@
                   <p>Nenhum resultado encontrado.</p>
                   <% } %>
                     <% } %>
-      </div>
+    </div>
 
-      <script src="/js/procurar.js"></script>
+    <script src="/js/procurar.js"></script>
 </body>
 
 </html>

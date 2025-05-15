@@ -424,6 +424,35 @@ app.get('/home', (req, res) => {
   });
 });
 
+// Rota para download de arquivo
+app.get('/download/:id', (req, res) => {
+  const idTg = req.params.id;
+
+  const query = 'SELECT nome_arquivo, arquivo FROM tg WHERE id_tg = ?';
+  db.query(query, [idTg], (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar arquivo:', err);
+      return res.status(500).send('Erro ao buscar o arquivo.');
+    }
+
+    if (results.length === 0) {
+      return res.status(404).send('Arquivo não encontrado.');
+    }
+
+    const { nome_arquivo, arquivo } = results[0];
+
+    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(nome_arquivo)}"`);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.send(arquivo);
+  });
+});
+
+
+
+
+
+
+
 // Iniciar servidor
 app.listen(3000, () => {
   console.log('Servidor rodando na porta 3000');

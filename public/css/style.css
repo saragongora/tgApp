@@ -802,3 +802,21 @@ button {
       background-image: url('/images/icon_voltar.png');
     }
 }
+
+
+.card-result {
+  position: relative;
+  padding-bottom: 40px; /* espaço para o botão */
+}
+
+.download-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.download-btn img {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}

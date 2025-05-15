@@ -149,15 +149,15 @@
               <div class="card-body-footer">
                 <div class="card-texts">
                   <p>Orientador: <%= registro.orientadores.join(', ') %></p>
-              <p>Alunos: <%= registro.alunos.join(' , ') %></p>
-              <p>Curso: <%= registro.curso %></p>
-            </div>
+                  <p>Alunos: <%= registro.alunos.join(' , ') %></p>
+                    <p>Curso: <%= registro.curso %></p>
+                </div>
           
-            <div class="card-buttons">
-              <a href="/editar/<%= registro.id_tg %>" title="Editar">
+                <div class="card-buttons">
+                <a href="/editar/<%= registro.id_tg %>" title="Editar">
                 <img src="/images/icon_editar.png" alt="Editar" style="width: 20px; height: 20px;">
-              </a>
-              <form action="/excluir/<%= registro.id_tg %>" method="POST" style="display:inline;">
+                 </a>
+                <form action="/excluir/<%= registro.id_tg %>" method="POST" style="display:inline;">
                 <button type="submit" title="Excluir" onclick="return confirm(' Tem certeza que deseja excluir este registro?');" style="background: none; border: none; padding: 0;">
                       <img src="/images/icon_excluir.png" alt="Excluir" style="width: 20px; height: 20px;">
                       </button>
