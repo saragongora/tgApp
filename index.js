@@ -30,7 +30,7 @@ const upload = multer({ storage });
 
 // Página inicial → redireciona pro login
 app.get('/', (req, res) => {
-  res.redirect('/login');
+  res.redirect('/home');
 });
 
 // Tela de login
