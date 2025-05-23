@@ -1,20 +1,25 @@
 const mysql = require('mysql2');
 
-const connection = mysql.createConnection({
-  host: '35.225.51.145', 
-  user: 'root',                     
-  password: '*N.3a@Q2^/}GP4/t',       
-  database: 'tgapp',   
-  port: 3306,             
-  charset: 'utf8mb4'
+const pool = mysql.createPool({
+  host: '35.225.51.145',
+  user: 'root',
+  password: '*N.3a@Q2^/}GP4/t',
+  database: 'tgApp',
+  port: 3306,
+  charset: 'utf8mb4',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-connection.connect((err) => {
+// Testa a conexão
+pool.getConnection((err, connection) => {
   if (err) {
     console.error('Erro ao conectar ao MySQL:', err.message);
-    return;
+  } else {
+    console.log('Conectado ao banco de dados MySQL!');
+    connection.release(); // Libera a conexão de volta pro pool
   }
-  console.log('Conectado ao banco de dados MySQL!');
 });
 
-module.exports = connection;
+module.exports = pool;
