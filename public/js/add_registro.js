@@ -4,19 +4,31 @@ function adicionarItem(inputId, containerId) {
   const valor = input.value.trim();
   if (!valor) return;
 
-  const index = container.children.length;
-
   const div = document.createElement('div');
   div.className = containerId.includes('aluno') ? 'aluno-item' : 'orientador-item';
-  div.innerHTML = `
-    <span>${valor}</span>
-    <button type="button" class="remove-item" onclick="removerItem('${containerId}', ${index})">x</button>
-  `;
+
+  const span = document.createElement('span');
+  span.textContent = valor;
+
+  const btnRemover = document.createElement('button');
+  btnRemover.type = 'button';
+  btnRemover.textContent = 'x';
+  btnRemover.className = 'remove-item';
+
+  // ⬇ Aqui está o segredo: remove o próprio pai
+  btnRemover.addEventListener('click', function () {
+    container.removeChild(div);
+    atualizarInputsOcultos();
+  });
+
+  div.appendChild(span);
+  div.appendChild(btnRemover);
   container.appendChild(div);
   input.value = '';
 
   atualizarInputsOcultos();
 }
+
 
 function removerItem(containerId, index) {
   const container = document.getElementById(containerId);
