@@ -64,5 +64,16 @@ form.addEventListener('submit', function() {
   atualizarInputsOcultos();
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+  const botõesRemover = document.querySelectorAll('.remove-item');
+  botõesRemover.forEach(botão => {
+    botão.addEventListener('click', function () {
+      const div = this.parentElement;
+      div.parentElement.removeChild(div);
+      atualizarInputsOcultos();
+    });
+  });
+});
+
 
 document.addEventListener('DOMContentLoaded', atualizarInputsOcultos);

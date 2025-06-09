@@ -86,17 +86,15 @@
           onclick="adicionarItem('orientadorInput', 'orientadoresContainer')">+</button>
       </div>
       <div id="orientadoresContainer">
-        <% registro.orientadores.forEach((orientador, index)=> { %>
-          <div class="orientador-item">
-            <span>
-              <%= orientador %>
-            </span>
 
-            <button type="button" class="remove-item"
-              onclick="removerItem('orientadoresContainer', '<%= index %>')">x</button>
+        <% registro.orientadores.forEach((orientador) => { %>
+  <div class="orientador-item">
+    <span><%= orientador %></span>
+    <button type="button" class="remove-item">x</button>
+  </div>
+<% }) %>
 
-          </div>
-          <% }) %>
+
       </div>
 
       <label for="alunoInput">Alunos:</label>
