@@ -815,3 +815,15 @@ button {
   height: 24px;
   cursor: pointer;
 }
+
+
+.tooltip {
+  display: none;
+  color: #fff;
+  background-color: #ff9800;
+  padding: 5px 10px;
+  font-size: 0.9em;
+  border-radius: 5px;
+  position: relative;
+  margin-top: 5px;
+}

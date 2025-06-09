@@ -76,4 +76,39 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+let avisoAlunoExibido = false;
+let avisoOrientadorExibido = false;
+
+document.getElementById('formRegistro').addEventListener('submit', function (e) {
+  atualizarInputsOcultos();
+
+  const alunoInput = document.getElementById('alunoInput');
+  const orientadorInput = document.getElementById('orientadorInput');
+  const tooltipAluno = document.getElementById('tooltipAluno');
+  const tooltipOrientador = document.getElementById('tooltipOrientador');
+
+  let impedirEnvio = false;
+
+  if (alunoInput.value.trim() !== '' && !avisoAlunoExibido) {
+    tooltipAluno.style.display = 'block';
+    impedirEnvio = true;
+    avisoAlunoExibido = true;
+  } else {
+    tooltipAluno.style.display = 'none';
+  }
+
+  if (orientadorInput.value.trim() !== '' && !avisoOrientadorExibido) {
+    tooltipOrientador.style.display = 'block';
+    impedirEnvio = true;
+    avisoOrientadorExibido = true;
+  } else {
+    tooltipOrientador.style.display = 'none';
+  }
+
+  if (impedirEnvio) {
+    e.preventDefault();
+  }
+});
+
+
 document.addEventListener('DOMContentLoaded', atualizarInputsOcultos);
