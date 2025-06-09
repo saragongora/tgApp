@@ -30,7 +30,7 @@
   <div class="add-registro-container">
     <h2>Editar Trabalho Acadêmico</h2>
 
-    <form action="/editar/<%= registro.id_tg %>" method="POST" enctype="multipart/form-data">
+    <form id = "formEditar" action="/editar/<%= registro.id_tg %>" method="POST" enctype="multipart/form-data">
       <label for="nome_trabalho">Nome do Trabalho:</label>
       <input type="text" id="nome_trabalho" name="nome_trabalho" value="<%= registro.nome_tg %>" required>
 
@@ -85,6 +85,7 @@
         <button type="button" class="add-registro-btn-add"
           onclick="adicionarItem('orientadorInput', 'orientadoresContainer')">+</button>
       </div>
+      <div class="tooltip" id="tooltipOrientador">⚠ Nome digitado, mas não adicionado. Clique no "+" para salvar o nome.</div>
       <div id="orientadoresContainer">
 
         <% registro.orientadores.forEach((orientador) => { %>
