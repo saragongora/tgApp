@@ -30,7 +30,7 @@
   <div class="add-registro-container">
     <h2>Editar Trabalho Acadêmico</h2>
 
-    <form id = "formEditar" action="/editar/<%= registro.id_tg %>" method="POST" enctype="multipart/form-data">
+    <form id="formregistro" action="/editar/<%= registro.id_tg %>" method="POST" enctype="multipart/form-data">
       <label for="nome_trabalho">Nome do Trabalho:</label>
       <input type="text" id="nome_trabalho" name="nome_trabalho" value="<%= registro.nome_tg %>" required>
 
@@ -85,18 +85,22 @@
         <button type="button" class="add-registro-btn-add"
           onclick="adicionarItem('orientadorInput', 'orientadoresContainer')">+</button>
       </div>
-      <div class="tooltip" id="tooltipOrientador">⚠ Nome digitado, mas não adicionado. Clique no "+" para salvar o nome.</div>
+
+      <!-- Tooltip entra aqui -->
+      <div id="tooltipOrientadorEditar" class="tooltip-aviso">Clique no "+" para adicionar o orientador</div>
+
+      <!-- Lista de orientadores -->
       <div id="orientadoresContainer">
-
-        <% registro.orientadores.forEach((orientador) => { %>
-  <div class="orientador-item">
-    <span><%= orientador %></span>
-    <button type="button" class="remove-item">x</button>
-  </div>
-<% }) %>
-
-
+        <% registro.orientadores.forEach((orientador)=> { %>
+          <div class="orientador-item">
+            <span>
+              <%= orientador %>
+            </span>
+            <button type="button" class="remove-item">x</button>
+          </div>
+          <% }) %>
       </div>
+
 
       <label for="alunoInput">Alunos:</label>
       <div class="add-registro-input-group">
@@ -105,13 +109,19 @@
           onclick="adicionarItem('alunoInput', 'alunosContainer')">+</button>
       </div>
 
+      <div id="tooltipOrientadorEditar" class="tooltip-aviso">Clique no "+" para adicionar o aluno</div>
+
+
+
       <div id="alunosContainer">
-        <% registro.alunos.forEach((aluno) => { %>
-  <div class="aluno-item">
-    <span><%= aluno %></span>
-    <button type="button" class="remove-item">x</button>
-  </div>
-<% }) %>
+        <% registro.alunos.forEach((aluno)=> { %>
+          <div class="aluno-item">
+            <span>
+              <%= aluno %>
+            </span>
+            <button type="button" class="remove-item">x</button>
+          </div>
+          <% }) %>
 
       </div>
 
