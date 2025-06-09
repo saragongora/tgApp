@@ -103,18 +103,15 @@
         <button type="button" class="add-registro-btn-add"
           onclick="adicionarItem('alunoInput', 'alunosContainer')">+</button>
       </div>
+
       <div id="alunosContainer">
-        <% registro.alunos.forEach((aluno, index)=> { %>
-          <div class="aluno-item">
-            <span>
-              <%= aluno %>
-            </span>
+        <% registro.alunos.forEach((aluno) => { %>
+  <div class="aluno-item">
+    <span><%= aluno %></span>
+    <button type="button" class="remove-item">x</button>
+  </div>
+<% }) %>
 
-            <button type="button" class="remove-item"
-              onclick="removerItem('alunosContainer', '<%= index %>')">x</button>
-
-          </div>
-          <% }) %>
       </div>
 
       <label for="arquivo">Atualizar PDF (opcional):</label>
