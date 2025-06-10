@@ -185,7 +185,7 @@
                     <% } %>
       </div>
 
-      <% if (pagination && pagination.totalPages > 1) { %>
+      <% if (typeof pagination !== 'undefined' && pagination.totalPages > 1) { %>
   <div class="pagination">
     <% if (pagination.hasPrev) { %>
       <a href="/buscar?termo=<%= termo %>&page=<%= pagination.page - 1 %>">« Anterior</a>

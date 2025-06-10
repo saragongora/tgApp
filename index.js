@@ -153,7 +153,13 @@ app.get('/buscar', (req, res) => {
       semestre: '',
       curso: '',
       tipo_trabalho: '',
-      pagination: null
+      pagination: { // SEMPRE defina o objeto, mesmo vazio
+    page: page || 1,
+    totalPages: Math.ceil(total / limit) || 1,
+    hasPrev: false,
+    hasNext: false,
+    totalResults: total || 0
+  }
     });
   }
 
