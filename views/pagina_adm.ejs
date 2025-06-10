@@ -185,6 +185,26 @@
                     <% } %>
       </div>
 
+      <% if (pagination && pagination.totalPages > 1) { %>
+  <div class="pagination">
+    <% if (pagination.hasPrev) { %>
+      <a href="/buscar?termo=<%= termo %>&page=<%= pagination.page - 1 %>">« Anterior</a>
+    <% } %>
+
+    <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+      <% if (i === pagination.page) { %>
+        <a href="#" class="active"><%= i %></a>
+      <% } else { %>
+        <a href="/buscar?termo=<%= termo %>&page=<%= i %>"><%= i %></a>
+      <% } %>
+    <% } %>
+
+    <% if (pagination.hasNext) { %>
+      <a href="/buscar?termo=<%= termo %>&page=<%= pagination.page + 1 %>">Próxima »</a>
+    <% } %>
+  </div>
+<% } %>
+
 
       <script src="/js/procurar.js"></script>
 </body>

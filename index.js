@@ -139,6 +139,9 @@ app.post('/add-registro', upload.single('arquivo'), (req, res) => {
 
 app.get('/buscar', (req, res) => {
   const termo = req.query.termo;
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const offset = (page - 1) * limit;
 
   if (!termo) {
     const view = req.session.logado ? 'pagina_adm' : 'home';
@@ -149,13 +152,29 @@ app.get('/buscar', (req, res) => {
       ano_conclusao: '',
       semestre: '',
       curso: '',
-      tipo_trabalho: ''
+      tipo_trabalho: '',
+      pagination: null
     });
   }
 
   const likeTerm = `%${termo}%`;
 
-  const query = `
+  // Query para contar o total de resultados
+  const countQuery = `
+    SELECT COUNT(DISTINCT tg.id_tg) as total
+    FROM tg
+    LEFT JOIN aluno_tg ON tg.id_tg = aluno_tg.id_tg
+    LEFT JOIN aluno ON aluno.id_aluno = aluno_tg.id_aluno
+    LEFT JOIN orientador_tg ON tg.id_tg = orientador_tg.id_tg
+    LEFT JOIN orientador ON orientador.id_orientador = orientador_tg.id_orientador
+    WHERE 
+      tg.nome_tg LIKE ? OR 
+      aluno.nome_aluno LIKE ? OR 
+      orientador.nome_orientador LIKE ?
+  `;
+
+  // Query para buscar os resultados paginados
+  const dataQuery = `
     SELECT tg.*, 
       GROUP_CONCAT(DISTINCT aluno.nome_aluno) AS alunos,
       GROUP_CONCAT(DISTINCT orientador.nome_orientador) AS orientadores
@@ -177,30 +196,48 @@ app.get('/buscar', (req, res) => {
         orientador.nome_orientador LIKE ?
     )
     GROUP BY tg.id_tg
+    LIMIT ? OFFSET ?
   `;
 
-  db.query(query, [likeTerm, likeTerm, likeTerm], (err, results) => {
+  db.query(countQuery, [likeTerm, likeTerm, likeTerm], (err, countResults) => {
     if (err) {
-      console.error('Erro ao buscar registros:', err);
+      console.error('Erro ao contar registros:', err);
       return res.send('Erro na busca');
     }
 
-    const registros = results.map(r => ({
-      ...r,
-      alunos: r.alunos ? r.alunos.split(',') : [],
-      orientadores: r.orientadores ? r.orientadores.split(',') : []
-    }));
+    const total = countResults[0].total;
+    const totalPages = Math.ceil(total / limit);
 
-    const view = req.session.logado ? 'pagina_adm' : 'home';
+    db.query(dataQuery, [likeTerm, likeTerm, likeTerm, limit, offset], (err, results) => {
+      if (err) {
+        console.error('Erro ao buscar registros:', err);
+        return res.send('Erro na busca');
+      }
 
-    res.render(view, {
-      resultados: registros,
-      buscaRealizada: true,
-      termo,
-      ano_conclusao: req.query.ano_conclusao || '',
-      semestre: req.query.semestre || '',
-      curso: req.query.curso || '',
-      tipo_trabalho: req.query.tipo_trabalho || ''
+      const registros = results.map(r => ({
+        ...r,
+        alunos: r.alunos ? r.alunos.split(',') : [],
+        orientadores: r.orientadores ? r.orientadores.split(',') : []
+      }));
+
+      const view = req.session.logado ? 'pagina_adm' : 'home';
+
+      res.render(view, {
+        resultados: registros,
+        buscaRealizada: true,
+        termo,
+        ano_conclusao: req.query.ano_conclusao || '',
+        semestre: req.query.semestre || '',
+        curso: req.query.curso || '',
+        tipo_trabalho: req.query.tipo_trabalho || '',
+        pagination: {
+          page,
+          totalPages,
+          hasPrev: page > 1,
+          hasNext: page < totalPages,
+          totalResults: total
+        }
+      });
     });
   });
 });
