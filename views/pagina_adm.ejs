@@ -41,13 +41,21 @@
   </div>
 
   <% if (buscaRealizada && termo) { %>
-  <div class="linha-mensagem">
-    <p class="mensagem-resultado">
-      Resultados de pesquisa para: <strong><%= termo %></strong>
-    </p>
-    <a href="#" class="link-filtrar" onclick="abrirModalFiltro()">Filtrar</a>
-  </div>
-<% } %>
+    <div class="linha-mensagem">
+      <p class="mensagem-resultado">
+        <% if (resultados.length===0) { %>
+          Nenhum resultado encontrado para: <strong>
+            <%= termo %>
+          </strong>
+          <% } else { %>
+            <%= resultados.length %> resultado<%= resultados.length !==1 ? 's' : '' %> de busca para: <strong>
+                  <%= termo %>
+                </strong>
+                <% } %>
+      </p>
+      <a href="#" class="link-filtrar" onclick="abrirModalFiltro()">Filtrar</a>
+    </div>
+    <% } %>
 
       <!-- Modal de filtro -->
       <div id="modal-filtro" class="modal-filtro-overlay" onclick="fecharModalFiltro(event)">
@@ -140,7 +148,9 @@
           <% resultados.forEach(registro=> { %>
             <div class="card-result">
               <div class="card-header">
-                <p class="titulo"><strong><%= registro.tipo.toUpperCase() %> - <%= registro.nome_tg %></strong></p>
+                <p class="titulo"><strong>
+                    <%= registro.tipo.toUpperCase() %> - <%= registro.nome_tg %>
+                  </strong></p>
                 <span class="ano-semestre">
                   <%= registro.ano %>-<%= registro.semestre %>
                 </span>
