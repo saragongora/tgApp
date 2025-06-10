@@ -38,10 +38,12 @@
   <% if (buscaRealizada && termo) { %>
     <div class="linha-mensagem">
       <p class="mensagem-resultado">
-        Resultados de pesquisa para: <strong>
-          <%= termo %>
-        </strong>
-      </p>
+  <% if (resultados.length === 0) { %>
+    Nenhum resultado encontrado para: <strong><%= termo %></strong>
+  <% } else { %>
+    <%= resultados.length %> resultado<%= resultados.length !== 1 ? 's' : '' %> de busca para: <strong><%= termo %></strong>
+  <% } %>
+</p>
       <a href="#" class="link-filtrar" onclick="abrirModalFiltro()">Filtrar</a>
     </div>
     <% } %>
@@ -166,6 +168,26 @@
                   <% } %>
                     <% } %>
     </div>
+
+    <% if (typeof pagination !== 'undefined' && pagination.totalPages > 1) { %>
+  <div class="pagination">
+    <% if (pagination.hasPrev) { %>
+      <a href="/buscar?termo=<%= termo %>&page=<%= pagination.page - 1 %>">« Anterior</a>
+    <% } %>
+
+    <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+      <% if (i === pagination.page) { %>
+        <a href="#" class="active"><%= i %></a>
+      <% } else { %>
+        <a href="/buscar?termo=<%= termo %>&page=<%= i %>"><%= i %></a>
+      <% } %>
+    <% } %>
+
+    <% if (pagination.hasNext) { %>
+      <a href="/buscar?termo=<%= termo %>&page=<%= pagination.page + 1 %>">Próxima »</a>
+    <% } %>
+  </div>
+<% } %>
 
     <script src="/js/procurar.js"></script>
 </body>
