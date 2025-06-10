@@ -30,7 +30,7 @@
   <div class="add-registro-container">
     <h2>Editar Trabalho Acadêmico</h2>
 
-    <form id="formregistro" action="/editar/<%= registro.id_tg %>" method="POST" enctype="multipart/form-data">
+    <form id="formRegistro" action="/editar/<%= registro.id_tg %>" method="POST" enctype="multipart/form-data">
       <label for="nome_trabalho">Nome do Trabalho:</label>
       <input type="text" id="nome_trabalho" name="nome_trabalho" value="<%= registro.nome_tg %>" required>
 
