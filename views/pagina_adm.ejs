@@ -188,19 +188,19 @@
       <% if (typeof pagination !== 'undefined' && pagination.totalPages > 1) { %>
   <div class="pagination">
     <% if (pagination.hasPrev) { %>
-      <a href="/buscar?termo=<%= termo %>&page=<%= pagination.page - 1 %>">« Anterior</a>
+      <a href="/filtro?termo=<%= termo %>&ano_conclusao=<%= ano_conclusao %>&semestre=<%= semestre %>&curso=<%= curso %>&tipo_trabalho=<%= tipo_trabalho %>&page=<%= pagination.page - 1 %>">« Anterior</a>
     <% } %>
 
     <% for (let i = 1; i <= pagination.totalPages; i++) { %>
       <% if (i === pagination.page) { %>
         <a href="#" class="active"><%= i %></a>
       <% } else { %>
-        <a href="/buscar?termo=<%= termo %>&page=<%= i %>"><%= i %></a>
+        <a href="/filtro?termo=<%= termo %>&ano_conclusao=<%= ano_conclusao %>&semestre=<%= semestre %>&curso=<%= curso %>&tipo_trabalho=<%= tipo_trabalho %>&page=<%= i %>"><%= i %></a>
       <% } %>
     <% } %>
 
     <% if (pagination.hasNext) { %>
-      <a href="/buscar?termo=<%= termo %>&page=<%= pagination.page + 1 %>">Próxima »</a>
+      <a href="/filtro?termo=<%= termo %>&ano_conclusao=<%= ano_conclusao %>&semestre=<%= semestre %>&curso=<%= curso %>&tipo_trabalho=<%= tipo_trabalho %>&page=<%= pagination.page + 1 %>">Próxima »</a>
     <% } %>
   </div>
 <% } %>
