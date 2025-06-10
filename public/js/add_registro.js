@@ -73,6 +73,25 @@ document.addEventListener('DOMContentLoaded', () => {
       atualizarInputsOcultos();
     });
   });
+
+  // Captura Enter no campo de orientador
+  const orientadorInput = document.getElementById('orientadorInput');
+  orientadorInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Evita o envio do formulário
+      adicionarItem('orientadorInput', 'orientadoresContainer');
+    }
+  });
+
+  // Captura Enter no campo de aluno
+  const alunoInput = document.getElementById('alunoInput');
+  alunoInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Evita o envio do formulário
+      adicionarItem('alunoInput', 'alunosContainer');
+    }
+  });
+
 });
 
 
