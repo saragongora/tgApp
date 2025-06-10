@@ -140,7 +140,7 @@ app.post('/add-registro', upload.single('arquivo'), (req, res) => {
 app.get('/buscar', (req, res) => {
   const termo = req.query.termo;
   const page = parseInt(req.query.page) || 1;
-  const limit = 10;
+  const limit = 5;
   const offset = (page - 1) * limit;
 
   if (!termo) {

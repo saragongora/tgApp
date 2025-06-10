@@ -834,6 +834,7 @@ button {
   justify-content: center;
   margin-top: 20px;
   gap: 5px;
+  margin-bottom: 50px;
 }
 
 .pagination a {
@@ -845,9 +846,9 @@ button {
 }
 
 .pagination a.active {
-  background-color: #4CAF50;
+  background-color: #990000;
   color: white;
-  border: 1px solid #4CAF50;
+  border: 1px solid #990000;
 }
 
 .pagination a:hover:not(.active) {
