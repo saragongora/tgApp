@@ -376,12 +376,28 @@ app.post('/excluir/:id', (req, res) => {
 });
 
 
-// Filtrar 
+// Filtrar com paginação
 app.get('/filtro', (req, res) => {
   const { termo, ano_conclusao, semestre, curso, tipo_trabalho } = req.query;
+  const page = parseInt(req.query.page) || 1;
+  const limit = 5; // 5 resultados por página
+  const offset = (page - 1) * limit;
+  
   const view = req.session.logado ? 'pagina_adm' : 'home';
 
-  let query = `
+  // Query para contar o total de resultados
+  let countQuery = `
+    SELECT COUNT(DISTINCT tg.id_tg) as total
+    FROM tg
+    LEFT JOIN aluno_tg ON tg.id_tg = aluno_tg.id_tg
+    LEFT JOIN aluno ON aluno.id_aluno = aluno_tg.id_aluno
+    LEFT JOIN orientador_tg ON tg.id_tg = orientador_tg.id_tg
+    LEFT JOIN orientador ON orientador.id_orientador = orientador_tg.id_orientador
+    WHERE 1=1
+  `;
+
+  // Query para buscar os resultados (com paginação)
+  let dataQuery = `
     SELECT tg.*, 
            GROUP_CONCAT(DISTINCT aluno.nome_aluno SEPARATOR ', ') AS alunos, 
            GROUP_CONCAT(DISTINCT orientador.nome_orientador SEPARATOR ', ') AS orientadores 
@@ -394,65 +410,97 @@ app.get('/filtro', (req, res) => {
   `;
 
   const params = [];
+  const countParams = [];
 
+  // Construção das condições WHERE
   if (termo) {
-    query += `
+    const termoLike = `%${termo}%`;
+    const whereClause = `
       AND (
         tg.nome_tg LIKE ? OR 
         aluno.nome_aluno LIKE ? OR 
         orientador.nome_orientador LIKE ?
       )
     `;
-    const termoLike = `%${termo}%`;
+    dataQuery += whereClause;
+    countQuery += whereClause;
     params.push(termoLike, termoLike, termoLike);
+    countParams.push(termoLike, termoLike, termoLike);
   }
 
   if (ano_conclusao) {
-    query += ' AND tg.ano = ?';
+    dataQuery += ' AND tg.ano = ?';
+    countQuery += ' AND tg.ano = ?';
     params.push(ano_conclusao);
+    countParams.push(ano_conclusao);
   }
 
   if (semestre) {
-    query += ' AND tg.semestre = ?';
+    dataQuery += ' AND tg.semestre = ?';
+    countQuery += ' AND tg.semestre = ?';
     params.push(semestre);
+    countParams.push(semestre);
   }
 
   if (curso) {
-    query += ' AND tg.curso = ?';
+    dataQuery += ' AND tg.curso = ?';
+    countQuery += ' AND tg.curso = ?';
     params.push(curso);
+    countParams.push(curso);
   }
 
   if (tipo_trabalho) {
-    query += ' AND tg.tipo = ?';
+    dataQuery += ' AND tg.tipo = ?';
+    countQuery += ' AND tg.tipo = ?';
     params.push(tipo_trabalho);
+    countParams.push(tipo_trabalho);
   }
 
-  query += ' GROUP BY tg.id_tg ORDER BY tg.ano DESC, tg.semestre DESC';
+  dataQuery += ' GROUP BY tg.id_tg ORDER BY tg.ano DESC, tg.semestre DESC LIMIT ? OFFSET ?';
+  params.push(limit, offset);
 
-  db.query(query, params, (err, results) => {
+  // Primeiro executa a contagem total
+  db.query(countQuery, countParams, (err, countResults) => {
     if (err) {
-      console.error('Erro ao buscar registros:', err);
+      console.error('Erro ao contar registros:', err);
       return res.send('Erro ao buscar registros');
     }
 
-    const registros = results.map(linha => ({
-      ...linha,
-      alunos: linha.alunos ? linha.alunos.split(', ') : [],
-      orientadores: linha.orientadores ? linha.orientadores.split(', ') : [],
-    }));
+    const total = countResults[0].total;
+    const totalPages = Math.ceil(total / limit);
 
-    res.render(view, {
-      resultados: registros,
-      buscaRealizada: true,
-      termo,
-      ano_conclusao,
-      semestre,
-      curso,
-      tipo_trabalho
+    // Depois busca os resultados paginados
+    db.query(dataQuery, params, (err, results) => {
+      if (err) {
+        console.error('Erro ao buscar registros:', err);
+        return res.send('Erro ao buscar registros');
+      }
+
+      const registros = results.map(linha => ({
+        ...linha,
+        alunos: linha.alunos ? linha.alunos.split(', ') : [],
+        orientadores: linha.orientadores ? linha.orientadores.split(', ') : [],
+      }));
+
+      res.render(view, {
+        resultados: registros,
+        buscaRealizada: true,
+        termo,
+        ano_conclusao,
+        semestre,
+        curso,
+        tipo_trabalho,
+        pagination: {
+          page,
+          totalPages,
+          hasPrev: page > 1,
+          hasNext: page < totalPages,
+          totalResults: total
+        }
+      });
     });
   });
 });
-
 
 // Página pública (sem login)
 app.get('/home', (req, res) => {
