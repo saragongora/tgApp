@@ -38,10 +38,10 @@
   <% if (buscaRealizada && termo) { %>
     <div class="linha-mensagem">
       <p class="mensagem-resultado">
-  <% if (resultados.length === 0) { %>
+  <% if (pagination.totalResults === 0) { %>
     Nenhum resultado encontrado para: <strong><%= termo %></strong>
   <% } else { %>
-    <%= resultados.length %> resultado<%= resultados.length !== 1 ? 's' : '' %> de busca para: <strong><%= termo %></strong>
+    <%= pagination.totalResults %> resultado<%= pagination.totalResults !== 1 ? 's' : '' %> de busca para: <strong><%= termo %></strong>
   <% } %>
 </p>
       <a href="#" class="link-filtrar" onclick="abrirModalFiltro()">Filtrar</a>
