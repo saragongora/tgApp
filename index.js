@@ -3,7 +3,8 @@ const path = require('path');
 const session = require('express-session');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
-const db = require('./models/db');
+const { pool, promisePool } = require('./models/db'); // Importação modificada
+const auth = require('./models/auth');
 
 const app = express();
 
@@ -15,7 +16,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: 'chave-super-secreta',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: { maxAge: 2 * 60 * 60 * 1000 } // 2 horas
 }));
 
 // Configurações do EJS
@@ -26,11 +28,108 @@ app.set('views', path.join(__dirname, 'views'));
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
+// Middleware para verificar autenticação
+function checkAuth(req, res, next) {
+  if (req.session.logado || req.session.emailVerified) {
+    return next();
+  }
+  res.redirect('/login-email');
+}
+
+
 // --- Rotas ---
 
-// Página inicial → redireciona pro login
+// Página inicial
 app.get('/', (req, res) => {
-  res.redirect('/home');
+  if (req.session.emailVerified || req.session.logado) {
+    // Se autenticado, mostra a home normalmente
+    res.render('home', {
+      resultados: [],
+      buscaRealizada: false,
+      termo: '',
+      ano_conclusao: '',
+      semestre: '',
+      curso: '',
+      tipo_trabalho: ''
+    });
+  } else {
+    // Se não autenticado, redireciona para login
+    res.redirect('/login-email');
+  }
+});
+
+// Rotas de autenticação por email
+app.get('/login-email', (req, res) => {
+  res.render('login_email', { erro: null, message: null });
+});
+
+app.post('/login-email', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    if (!auth.isValidFatecEmail(email)) {
+      return res.render('login_email', {
+        erro: 'Apenas e-mails @fatec.sp.gov.br são permitidos',
+        message: null
+      });
+    }
+
+    await auth.sendVerificationCode(email);
+
+    // Alterado: Redireciona para verify-code com o email como query param
+    return res.redirect(`/verify-code?email=${encodeURIComponent(email)}`);
+
+  } catch (error) {
+    res.render('login_email', {
+      erro: error.message,
+      message: null
+    });
+  }
+});
+
+// Tela de verificação de código
+app.get('/verify-code', (req, res) => {
+  const email = req.query.email;
+  if (!email) {
+    return res.redirect('/login-email');
+  }
+
+  res.render('verify_code', {
+    erro: null,
+    email,
+    message: req.query.message || null
+  });
+});
+
+app.post('/verify-code', async (req, res) => {
+  const { email, code } = req.body;
+
+  try {
+    const isValid = await auth.verifyCode(email, code);
+    if (isValid) {
+      req.session.emailVerified = true;
+      req.session.email = email;
+      return res.redirect('/home');
+    } else {
+      res.render('verify_code', {
+        erro: 'Código inválido ou expirado',
+        email,
+        message: null
+      });
+    }
+  } catch (error) {
+    res.render('verify_code', {
+      erro: error.message,
+      email,
+      message: null
+    });
+  }
+});
+
+// Logout
+app.get('/logout', (req, res) => {
+  req.session.destroy();
+  res.redirect('/login-email');
 });
 
 // Tela de login
@@ -102,35 +201,53 @@ app.post('/add-registro', upload.single('arquivo'), (req, res) => {
 
   const alunosArray = Array.isArray(alunos) ? alunos : [alunos];
   const orientadoresArray = Array.isArray(orientadores) ? orientadores : [orientadores];
-
   const arquivo = req.file ? req.file.buffer : null;
   const nomeArquivo = req.file ? req.file.originalname : null;
 
   const sqlTg = `INSERT INTO tg (tipo, nome_tg, curso, ano, semestre, arquivo, nome_arquivo) VALUES (?, ?, ?, ?, ?, ?, ?)`;
   const tgValues = [tipo_trabalho, nome_trabalho, curso, ano_conclusao, semestre, arquivo, nomeArquivo];
 
-  db.query(sqlTg, tgValues, (err, result) => {
+  pool.query(sqlTg, tgValues, (err, result) => {
     if (err) return res.send('Erro ao inserir trabalho: ' + err);
 
     const idTg = result.insertId;
+    const errors = [];
 
+    // Processar alunos
     alunosArray.forEach(nome => {
       if (!nome.trim()) return;
-      db.query(`INSERT INTO aluno (nome_aluno) VALUES (?)`, [nome], (err, result) => {
-        if (err) return console.log('Erro ao inserir aluno:', err);
+      pool.query(`INSERT INTO aluno (nome_aluno) VALUES (?)`, [nome], (err, result) => {
+        if (err) {
+          errors.push(`Erro ao inserir aluno: ${err}`);
+          return;
+        }
         const idAluno = result.insertId;
-        db.query(`INSERT INTO aluno_tg (id_aluno, id_tg) VALUES (?, ?)`, [idAluno, idTg]);
+        pool.query(`INSERT INTO aluno_tg (id_aluno, id_tg) VALUES (?, ?)`, [idAluno, idTg], (err) => {
+          if (err) errors.push(`Erro ao vincular aluno: ${err}`);
+        });
       });
     });
 
+    // Processar orientadores
     orientadoresArray.forEach(nome => {
       if (!nome.trim()) return;
       const idOrientador = uuidv4();
-      db.query(`INSERT INTO orientador (id_orientador, nome_orientador) VALUES (?, ?)`, [idOrientador, nome], (err) => {
-        if (err) return console.log('Erro ao inserir orientador:', err);
-        db.query(`INSERT INTO orientador_tg (id_orientador, id_tg) VALUES (?, ?)`, [idOrientador, idTg]);
-      });
+      pool.query(`INSERT INTO orientador (id_orientador, nome_orientador) VALUES (?, ?)`,
+        [idOrientador, nome], (err) => {
+          if (err) {
+            errors.push(`Erro ao inserir orientador: ${err}`);
+            return;
+          }
+          pool.query(`INSERT INTO orientador_tg (id_orientador, id_tg) VALUES (?, ?)`,
+            [idOrientador, idTg], (err) => {
+              if (err) errors.push(`Erro ao vincular orientador: ${err}`);
+            });
+        });
     });
+
+    if (errors.length > 0) {
+      return res.send(`Alguns erros ocorreram: ${errors.join(', ')}`);
+    }
 
     res.redirect('/painel');
   });
@@ -153,19 +270,18 @@ app.get('/buscar', (req, res) => {
       semestre: '',
       curso: '',
       tipo_trabalho: '',
-      pagination: { // SEMPRE defina o objeto, mesmo vazio
-    page: page || 1,
-    totalPages: Math.ceil(total / limit) || 1,
-    hasPrev: false,
-    hasNext: false,
-    totalResults: total || 0
-  }
+      pagination: {
+        page: 1,
+        totalPages: 1,
+        hasPrev: false,
+        hasNext: false,
+        totalResults: 0
+      }
     });
   }
 
   const likeTerm = `%${termo}%`;
 
-  // Query para contar o total de resultados
   const countQuery = `
     SELECT COUNT(DISTINCT tg.id_tg) as total
     FROM tg
@@ -179,7 +295,6 @@ app.get('/buscar', (req, res) => {
       orientador.nome_orientador LIKE ?
   `;
 
-  // Query para buscar os resultados paginados
   const dataQuery = `
     SELECT tg.*, 
       GROUP_CONCAT(DISTINCT aluno.nome_aluno) AS alunos,
@@ -205,7 +320,7 @@ app.get('/buscar', (req, res) => {
     LIMIT ? OFFSET ?
   `;
 
-  db.query(countQuery, [likeTerm, likeTerm, likeTerm], (err, countResults) => {
+  pool.query(countQuery, [likeTerm, likeTerm, likeTerm], (err, countResults) => {
     if (err) {
       console.error('Erro ao contar registros:', err);
       return res.send('Erro na busca');
@@ -214,7 +329,7 @@ app.get('/buscar', (req, res) => {
     const total = countResults[0].total;
     const totalPages = Math.ceil(total / limit);
 
-    db.query(dataQuery, [likeTerm, likeTerm, likeTerm, limit, offset], (err, results) => {
+    pool.query(dataQuery, [likeTerm, likeTerm, likeTerm, limit, offset], (err, results) => {
       if (err) {
         console.error('Erro ao buscar registros:', err);
         return res.send('Erro na busca');
@@ -248,7 +363,8 @@ app.get('/buscar', (req, res) => {
   });
 });
 
-// Rota GET para carregar formulário de edição
+
+// Rota GET para carregar formulário de edição (atualizada)
 app.get('/editar/:id', (req, res) => {
   const idTg = req.params.id;
 
@@ -265,7 +381,8 @@ app.get('/editar/:id', (req, res) => {
     GROUP BY tg.id_tg
   `;
 
-  db.query(query, [idTg], (err, results) => {
+  // Alterado para usar pool.query em vez de db.query
+  pool.query(query, [idTg], (err, results) => {
     if (err) return res.send('Erro ao carregar dados para edição: ' + err);
     if (results.length === 0) return res.send('Registro não encontrado');
 
@@ -277,6 +394,7 @@ app.get('/editar/:id', (req, res) => {
   });
 });
 
+// Rota POST para processar edição (atualizada)
 app.post('/editar/:id', upload.single('arquivo'), async (req, res) => {
   const idTg = req.params.id;
   const {
@@ -294,10 +412,15 @@ app.post('/editar/:id', upload.single('arquivo'), async (req, res) => {
   const arquivo = req.file ? req.file.buffer : null;
   const nomeArquivo = req.file ? req.file.originalname : null;
 
-  const queryPromise = (query, params = []) =>
-    new Promise((resolve, reject) =>
-      db.query(query, params, (err, result) => (err ? reject(err) : resolve(result)))
-    );
+  // Função helper para usar com pool (não precisa mais do promisePool aqui)
+  const queryPromise = (query, params = []) => {
+    return new Promise((resolve, reject) => {
+      pool.query(query, params, (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
+  };
 
   try {
     // Atualiza TG
@@ -350,7 +473,7 @@ app.post('/editar/:id', upload.single('arquivo'), async (req, res) => {
       await queryPromise(`INSERT INTO orientador_tg (id_orientador, id_tg) VALUES (?, ?)`, [idOrientador, idTg]);
     }
 
-    // Agora sim: remove os órfãos
+    // Remove os órfãos
     await queryPromise(`DELETE FROM aluno WHERE id_aluno NOT IN (SELECT DISTINCT id_aluno FROM aluno_tg)`);
     await queryPromise(`DELETE FROM orientador WHERE id_orientador NOT IN (SELECT DISTINCT id_orientador FROM orientador_tg)`);
 
@@ -362,27 +485,38 @@ app.post('/editar/:id', upload.single('arquivo'), async (req, res) => {
 });
 
 
-
-//Excluir registro
-app.post('/excluir/:id', (req, res) => {
+// Versão melhorada excluir
+app.post('/excluir/:id', async (req, res) => {
   const idTg = req.params.id;
+  let connection;
 
-  db.query(`DELETE FROM aluno_tg WHERE id_tg = ?`, [idTg]);
-  db.query(`DELETE FROM orientador_tg WHERE id_tg = ?`, [idTg]);
-  db.query(`DELETE FROM tg WHERE id_tg = ?`, [idTg], (err) => {
-    if (err) return res.send('Erro ao excluir trabalho: ' + err);
+  try {
+    connection = await promisePool.getConnection();
+    await connection.beginTransaction();
+
+    await connection.query(`DELETE FROM aluno_tg WHERE id_tg = ?`, [idTg]);
+    await connection.query(`DELETE FROM orientador_tg WHERE id_tg = ?`, [idTg]);
+    await connection.query(`DELETE FROM tg WHERE id_tg = ?`, [idTg]);
+    
+    await connection.commit();
     res.redirect('/painel');
-  });
+  } catch (err) {
+    if (connection) await connection.rollback();
+    console.error('Erro ao excluir registro:', err);
+    res.send('Erro ao excluir trabalho: ' + err.message);
+  } finally {
+    if (connection) connection.release();
+  }
 });
 
 
-// Filtrar com paginação
+// Filtrar com paginação (versão corrigida)
 app.get('/filtro', (req, res) => {
   const { termo, ano_conclusao, semestre, curso, tipo_trabalho } = req.query;
   const page = parseInt(req.query.page) || 1;
   const limit = 5; // 5 resultados por página
   const offset = (page - 1) * limit;
-  
+
   const view = req.session.logado ? 'pagina_adm' : 'home';
 
   // Query para contar o total de resultados
@@ -412,7 +546,7 @@ app.get('/filtro', (req, res) => {
   const params = [];
   const countParams = [];
 
-  // Construção das condições WHERE
+  // Construção das condições WHERE (mantido igual)
   if (termo) {
     const termoLike = `%${termo}%`;
     const whereClause = `
@@ -459,8 +593,8 @@ app.get('/filtro', (req, res) => {
   dataQuery += ' GROUP BY tg.id_tg ORDER BY tg.ano DESC, tg.semestre DESC LIMIT ? OFFSET ?';
   params.push(limit, offset);
 
-  // Primeiro executa a contagem total
-  db.query(countQuery, countParams, (err, countResults) => {
+  // Primeiro executa a contagem total (usando pool.query)
+  pool.query(countQuery, countParams, (err, countResults) => {
     if (err) {
       console.error('Erro ao contar registros:', err);
       return res.send('Erro ao buscar registros');
@@ -469,8 +603,8 @@ app.get('/filtro', (req, res) => {
     const total = countResults[0].total;
     const totalPages = Math.ceil(total / limit);
 
-    // Depois busca os resultados paginados
-    db.query(dataQuery, params, (err, results) => {
+    // Depois busca os resultados paginados (usando pool.query)
+    pool.query(dataQuery, params, (err, results) => {
       if (err) {
         console.error('Erro ao buscar registros:', err);
         return res.send('Erro ao buscar registros');
@@ -502,8 +636,8 @@ app.get('/filtro', (req, res) => {
   });
 });
 
-// Página pública (sem login)
-app.get('/home', (req, res) => {
+// Página pública (protegida por verificação de email)
+app.get('/home', checkAuth, (req, res) => {
   res.render('home', {
     resultados: [],
     buscaRealizada: false,
@@ -515,12 +649,15 @@ app.get('/home', (req, res) => {
   });
 });
 
-// Rota para download de arquivo
+
+// Rotas de download (mantidas com callbacks)
+// Rota de download (usando pool com callbacks)
 app.get('/download/:id', (req, res) => {
   const idTg = req.params.id;
 
   const query = 'SELECT nome_arquivo, arquivo FROM tg WHERE id_tg = ?';
-  db.query(query, [idTg], (err, results) => {
+
+  pool.query(query, [idTg], (err, results) => {
     if (err) {
       console.error('Erro ao buscar arquivo:', err);
       return res.status(500).send('Erro ao buscar o arquivo.');
@@ -532,17 +669,12 @@ app.get('/download/:id', (req, res) => {
 
     const { nome_arquivo, arquivo } = results[0];
 
+
     res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(nome_arquivo)}"`);
     res.setHeader('Content-Type', 'application/pdf');
     res.send(arquivo);
   });
 });
-
-
-
-
-
-
 
 // Iniciar servidor
 app.listen(3000, () => {

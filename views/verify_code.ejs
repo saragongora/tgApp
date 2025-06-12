@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Verificar código</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/search.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+  <div class="header">
+    <a href="/home">
+      <img src="/images/logoFatec.png" alt="Logo Fatec" style="height: 40px;">
+    </a>
+  </div>
+
+  <div class="sub-header">
+    Faculdade de Tecnologia José Crespo Gonzales
+  </div>
+
+  <div class="verificar-codigo">
+    <div class="texto-entrada">
+    <h2>Verifique seu código</h2>
+
+<% if (message) { %>
+  <p style="color: green;"><%= message %></p>
+<% } %>
+
+<% if (erro) { %>
+  <p style="color: red;"><%= erro %></p>
+<% } %>
+
+<p>Enviamos um código de 6 dígitos para <strong><%= email %></strong>.<br>Por favor, insira-o abaixo:</p>
+</div>
+
+<form action="/verify-code" method="POST" class="form-acesso">
+<input type="hidden" name="email"  required placeholder="seuemail@fatec.sp.gov.br" value="<%= email %>">
+  <input type="text" id="code" name="code" required maxlength="6" pattern="\d{6}"  required placeholder="Código de acesso">
+  <button type="submit">Verificar</button>
+</form>
+
+<p class="enviar-novamente">Não recebeu o código? <a href="/login-email">Enviar novamente</a></p>
+
+</div>
+</body>
+</html>

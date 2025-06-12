@@ -1,0 +1,42 @@
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/search.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+  <div class="header">
+    <a href="/home">
+      <img src="/images/logoFatec.png" alt="Logo Fatec" style="height: 40px;">
+    </a>
+  </div>
+
+  <div class="sub-header">
+    Faculdade de Tecnologia José Crespo Gonzales
+  </div>
+
+<div class="login-aluno">
+  <div class="texto-entrada">
+    <h2>Acesso Restrito</h2>
+    <p>Este site é restrito a alunos e funcionários da Fatec.<br>Por favor, use seu e-mail @fatec.sp.gov.br para acessar.</p>
+  </div>
+
+  <% if (erro) { %>
+    <p class="erro"><%= erro %></p>
+  <% } %>
+
+  <form action="/login-email" method="POST" class="form-login">
+    <input type="email" id="email" name="email" required placeholder="seuemail@fatec.sp.gov.br">
+    <button type="submit">Enviar código</button>
+  </form>
+</div>
+
+
+
+</body>
+
+</html>
