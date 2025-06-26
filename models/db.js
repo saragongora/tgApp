@@ -3,7 +3,7 @@ const mysql = require('mysql2');
 const pool = mysql.createPool({
   host: '35.225.51.145',
   user: 'root',
-  password: '*N.3a@Q2^/}GP4/t',
+  password: '************',
   database: 'tgApp',
   port: 3306,
   charset: 'utf8mb4',
