@@ -1,9 +1,9 @@
 const mysql = require('mysql2');
 
 const pool = mysql.createPool({
-  host: '35.225.51.145',
+  host: '127.0.0.1',
   user: 'root',
-  password: '************',
+  password: '******',
   database: 'tgApp',
   port: 3306,
   charset: 'utf8mb4',
@@ -12,10 +12,8 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-// Cria também um pool de promises para as novas funções
 const promisePool = pool.promise();
 
-// Testa a conexão (versão callback)
 pool.getConnection((err, connection) => {
   if (err) {
     console.error('Erro ao conectar ao MySQL:', err.message);
@@ -25,9 +23,8 @@ pool.getConnection((err, connection) => {
   }
 });
 
-// Exporta ambos
 module.exports = {
-  pool,          // Para o código legado (callbacks)
-  promisePool    // Para o novo código (async/await)
+  pool,         
+  promisePool    
 };
 

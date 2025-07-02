@@ -1,27 +1,26 @@
 // models/auth.js
 const nodemailer = require('nodemailer');
-const { promisePool } = require('./db');  // Alteração na importação
+const { promisePool } = require('./db');  
 
-// Configuração do transporter de e-mail (substitua com suas credenciais)
 const transporter = nodemailer.createTransport({
   service: 'gmail', 
   auth: {
-    user: 'acessotgapp@gmail.com',
-    pass: '**********'
+    user: '**********',
+    pass: '***********'
   }
 });
 
-// Gerar código aleatório de 6 dígitos (mantido igual)
+// Gerar código aleatório de 6 dígitos
 function generateCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// Verificar se o e-mail é válido (mantido igual)
+// Verificar se o e-mail é válido
 function isValidFatecEmail(email) {
   return email.endsWith('@fatec.sp.gov.br');
 }
 
-// Enviar código por e-mail (atualizado para usar promisePool)
+// Enviar código por e-mail
 async function sendVerificationCode(email) {
   console.log(`📨 Tentando enviar código para: ${email}`);
   
@@ -53,7 +52,7 @@ async function sendVerificationCode(email) {
     
     console.log('📝 Código inserido no banco. ID:', result.insertId);
 
-    // Verifique se o código realmente foi inserido
+    // Verifica se o código realmente foi inserido
     const [check] = await connection.query(
       'SELECT * FROM access_codes WHERE id = ?',
       [result.insertId]
@@ -61,7 +60,7 @@ async function sendVerificationCode(email) {
     console.log('🔍 Verificação pós-insert:', check[0]);
 
     const mailOptions = {
-      from: 'acessotgapp@gmail.com',
+      from: '************', //email disparador
       to: email,
       subject: 'Seu código de acesso',
       text: `Seu código: ${codigo}\nExpira em 15 minutos.`
@@ -85,7 +84,7 @@ async function sendVerificationCode(email) {
   }
 }
 
-// Verificar código (atualizado para usar promisePool)
+// Verifica o código 
 async function verifyCode(email, codigo) {
   let connection;
   try {
@@ -94,14 +93,14 @@ async function verifyCode(email, codigo) {
     console.log(`🔍 Verificando código para ${email}: ${codigo}`);
     console.log('⏳ Hora atual no servidor:', new Date());
     
-    // Primeiro: Verifique se há algum código para este email
+    //Verifica se há algum código para este email
     const [allCodes] = await connection.query(
       'SELECT id, codigo, expires_at, used FROM access_codes WHERE email = ? ORDER BY expires_at DESC',
       [email]
     );
     console.log('📋 Todos os códigos para este email:', allCodes);
     
-    // Depois: Faça a verificação específica
+    //Faz a verificação específica
     const [rows] = await connection.query(
       `SELECT id, email, codigo, expires_at, used, 
        NOW() as db_time,
@@ -149,7 +148,7 @@ async function verifyCode(email, codigo) {
   }
 }
 
-// Verificação do transporter (mantida igual)
+// Verificação do transporter
 transporter.verify((error, success) => {
   if (error) {
     console.error('❌ Erro na configuração do nodemailer:', error);

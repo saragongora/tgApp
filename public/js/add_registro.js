@@ -15,7 +15,6 @@ function adicionarItem(inputId, containerId) {
   btnRemover.textContent = 'x';
   btnRemover.className = 'remove-item';
 
-  // ⬇ Aqui está o segredo: remove o próprio pai
   btnRemover.addEventListener('click', function () {
     container.removeChild(div);
     atualizarInputsOcultos();
@@ -28,7 +27,6 @@ function adicionarItem(inputId, containerId) {
 
   atualizarInputsOcultos();
 }
-
 
 function removerItem(containerId, index) {
   const container = document.getElementById(containerId);
@@ -74,20 +72,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Captura Enter no campo de orientador
+
   const orientadorInput = document.getElementById('orientadorInput');
   orientadorInput.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') {
-      e.preventDefault(); // Evita o envio do formulário
+      e.preventDefault();
       adicionarItem('orientadorInput', 'orientadoresContainer');
     }
   });
 
-  // Captura Enter no campo de aluno
   const alunoInput = document.getElementById('alunoInput');
   alunoInput.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') {
-      e.preventDefault(); // Evita o envio do formulário
+      e.preventDefault(); 
       adicionarItem('alunoInput', 'alunosContainer');
     }
   });

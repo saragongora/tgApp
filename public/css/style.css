@@ -91,7 +91,6 @@ button {
   justify-content: flex-end;
 }
 
-
 .error {
   color: red;
   margin-bottom: 10px;
@@ -130,7 +129,6 @@ button {
       background-image: url('/images/icon_sair.png');
     }
   }
-  
 
   .header a {
     margin-left: 0;
@@ -198,8 +196,6 @@ button {
   white-space: nowrap;
 }
 
-
-
 .add-registro-container input[type="text"],
 .add-registro-container input[type="file"],
 .add-registro-container select {
@@ -231,8 +227,6 @@ button {
   border: 1px solid #ccc;
 }
 
-
-
 .add-registro-btn-add,
 .remove-item {
   height: 35px;
@@ -242,11 +236,11 @@ button {
   justify-content: center;
   box-sizing: border-box;
   flex-shrink: 0;
-  margin: 0;             /* <-- remove qualquer margem implícita */
-  line-height: normal;   /* <-- importante para evitar deslocamentos */
+  margin: 0;             
+  line-height: normal;   
   vertical-align: middle;
-  font-size: 14px;       /* <-- igual ao input */
-  border: 1px solid #ccc; /* opcional para visual igual */
+  font-size: 14px;       
+  border: 1px solid #ccc; 
   margin-top: 6px;
 }
 
@@ -270,7 +264,6 @@ button {
 .remove-item:focus {
   outline: none;
 }
-
 
 .add-registro-item {
   background-color: #eee;
@@ -305,7 +298,6 @@ button {
   text-decoration: none;
   font-weight: bold;
 }
-
 
 .add-registro-linha {
   display: flex;
@@ -349,8 +341,6 @@ button {
   margin-right: 10px; 
 }
 
-
-
 .search-container {
   display: flex;
   flex-direction: column;
@@ -358,7 +348,6 @@ button {
   justify-content: center; 
   height: 80vh;
 }
-
 
 .search-container label {
   font-weight: bold;
@@ -372,7 +361,6 @@ button {
   opacity: 0.8; 
   margin-bottom: 20px; 
 }
-
 
 .search-bar {
   position: relative;
@@ -423,7 +411,6 @@ button {
   padding: 0;
 }
 
-
 @media (max-width: 480px) {
   .search-container {
     width: 95%; 
@@ -448,7 +435,7 @@ button {
 
   .search-bar {
     padding: 10px 0; 
-    width: 100%;        /* Garante que ocupe o espaço permitido */
+    width: 100%;        
     max-width: 90%; 
   }
 
@@ -466,7 +453,7 @@ button {
   }
 
   .search-container.top {
-    align-items: center; /* Corrige o desalinhamento horizontal */
+    align-items: center; 
   }
 }
 
@@ -476,8 +463,8 @@ button {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   font-family: 'Roboto', sans-serif;
-  width: 700px;              /* largura fixa */
-  max-width: none;           /* remove o limite de largura */
+  width: 700px;              
+  max-width: none;           
   padding: 24px;
   position: relative;
   left: 50%;
@@ -579,14 +566,13 @@ button {
 
 .linha-mensagem {
   display: flex;
-  justify-content: space-between; /* alinha os dois elementos nas extremidades */
-  align-items: center;            /* alinha verticalmente ao centro */
-  width: 730px;                   /* mesma largura dos cards */
-  max-width: 100%;                /* evita estouro em telas pequenas */
+  justify-content: space-between; 
+  align-items: center;            
+  width: 730px;                   
+  max-width: 100%;                
   box-sizing: border-box;
   margin-top: 25px;
 }
-
 
 .mensagem-resultado {
   margin: 0;
@@ -611,17 +597,16 @@ button {
   .link-filtrar {
     display: block;
     text-align: center;
-    width: 100%; /* ocupa toda a largura para centralizar melhor */
-    margin-top: 0px; /* espaço abaixo do texto */
+    width: 100%; 
+    margin-top: 0px; 
     font-size: 14px;
   }
 
   .mensagem-resultado {
     font-size: 14px;
-    text-align: center; /* opcional */
+    text-align: center; 
   }
 }
-
 
 /* Filtro */
 .filtro-container {
@@ -692,7 +677,6 @@ button {
   box-sizing: border-box;
 }
 
-/* Agrupamento de campos lado a lado */
 .campo-duplo {
   display: flex;
   gap: 20px;
@@ -725,7 +709,7 @@ button {
 
 .limpar-container {
   text-align: right;
-  margin-top: 12px; /* espaçamento do container em relação ao item acima */
+  margin-top: 12px; 
 }
 
 .btn-limpar {
@@ -734,7 +718,6 @@ button {
   text-decoration: none;
 }
 
-/* Animações */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -744,12 +727,6 @@ button {
   from { transform: translateY(-20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
-
-
-
-
-
-
 
 @media (max-width: 600px) {
   .add-registro-container {
@@ -803,7 +780,6 @@ button {
     }
 }
 
-
 .download-btn {
   position: absolute;
   bottom: 10px;
@@ -816,7 +792,6 @@ button {
   cursor: pointer;
 }
 
-
 .tooltip {
   display: none;
   color: #fff;
@@ -827,7 +802,6 @@ button {
   position: relative;
   margin-top: 5px;
 }
-
 
 .pagination {
   display: flex;
@@ -866,24 +840,24 @@ button {
   text-align: center;
   margin-bottom: 20px;
   width: 100%;
-  max-width: 600px; /* Limita a largura máxima do texto */
+  max-width: 600px; 
 }
 
 .login-aluno .texto-entrada h2 {
-  font-size: clamp(20px, 5vw, 24px); /* Tamanho responsivo */
+  font-size: clamp(20px, 5vw, 24px); 
   color: #333;
   margin-bottom: 15px;
 }
 
 .login-aluno .texto-entrada p {
-  font-size: clamp(14px, 3.5vw, 16px); /* Tamanho responsivo */
+  font-size: clamp(14px, 3.5vw, 16px); 
   color: #555;
   margin: 0 auto 15px;
   padding: 0 15px;
   line-height: 1.5;
-  white-space: normal; /* Garante quebra normal do texto */
-  word-wrap: break-word; /* Quebra palavras longas */
-  hyphens: auto; /* Hifenização automática */
+  white-space: normal; 
+  word-wrap: break-word; 
+  hyphens: auto; 
 }
 
 .login-aluno .erro {
@@ -897,7 +871,7 @@ button {
 .login-aluno .form-login {
   display: flex;
   gap: 10px;
-  align-items: flex-start; /* Alterado para flex-start */
+  align-items: flex-start;
 }
 
 .login-aluno .form-login input[type="email"] {
@@ -908,11 +882,11 @@ button {
   width: 100%;
   height: 40px;
   box-sizing: border-box;
-  line-height: 20px; /* Valor explícito para o line-height */
+  line-height: 20px;
 }
 
 .login-aluno .form-login button {
-  padding: 10px 20px; /* Aumentei o padding horizontal */
+  padding: 10px 20px; 
   height: 40px;
   box-sizing: border-box;
   border: 1px solid #ccc;
@@ -921,26 +895,25 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  white-space: nowrap; /* Garante que o texto não quebre */
-  min-width: 120px; /* Largura mínima aumentada */
-  width: auto; /* Largura automática baseada no conteúdo */
-  flex-shrink: 0; /* Impede que o botão encolha */
+  white-space: nowrap; 
+  min-width: 120px; 
+  width: auto; 
+  flex-shrink: 0; 
 }
 
-/* Media Queries para ajustes específicos */
 @media (max-width: 600px) {
   .login-aluno {
     padding: 15px;
   }
   
   .login-aluno .form-login {
-    flex-wrap: nowrap; /* Impede quebra de linha */
+    flex-wrap: nowrap; 
     gap: 8px;
   }
   
   .login-aluno .form-login input[type="email"] {
-    min-width: 150px; /* Reduz a largura mínima */
-    font-size: 13px; /* Reduz fonte em telas pequenas */
+    min-width: 150px; 
+    font-size: 13px; 
   }
   
   .login-aluno .form-login button {
@@ -950,19 +923,19 @@ button {
   }
   
   .login-aluno .texto-entrada p {
-    white-space: normal; /* Permite quebra entre palavras */
-    hyphens: auto; /* Hifenização para evitar espaços grandes */
-    word-break: normal; /* Quebra apenas entre palavras */
+    white-space: normal; 
+    hyphens: auto; 
+    word-break: normal; 
   }
 }
 
 @media (max-width: 400px) {
   .login-aluno .form-login {
-    width: 95%; /* Aproveita melhor o espaço */
+    width: 95%; 
   }
   
   .login-aluno .form-login input[type="email"] {
-    min-width: 120px; /* Mais compacto */
+    min-width: 120px; 
   }
 }
 .verificar-codigo {
@@ -1008,7 +981,7 @@ button {
 .verificar-codigo .form-acesso {
    display: flex;
   gap: 10px;
-  align-items: flex-start; /* Alterado para flex-start */
+  align-items: flex-start; 
 }
 
 .verificar-codigo .form-acesso input[type="text"] {
@@ -1019,13 +992,13 @@ button {
   width: 100%;
   height: 40px;
   box-sizing: border-box;
-  line-height: 1; /* Reset do line-height */
-  vertical-align: middle; /* Alinhamento vertical */
+  line-height: 1; 
+  vertical-align: middle; 
 }
 
 .verificar-codigo .form-acesso button {
   padding: 10px 15px;
-  height: 40px; /* Mesma altura do input */
+  height: 40px; 
   box-sizing: border-box;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -1035,13 +1008,12 @@ button {
   justify-content: center;
   white-space: nowrap;
   min-width: 110px;
-  line-height: 1; /* Reset do line-height */
-  vertical-align: middle; /* Alinhamento vertical */
-  margin: 0; /* Remove qualquer margem */
-  position: relative; /* Para ajustes finos */
-  top: 0; /* Reset de posição */
+  line-height: 1; 
+  vertical-align: middle; 
+  margin: 0; 
+  position: relative; 
+  top: 0; 
 }
-
 
 .verificar-codigo .enviar-novamente {
   font-size: clamp(14px, 3.5vw, 16px);
@@ -1055,7 +1027,6 @@ button {
   color: #555;
 }
 
-/* Media Queries para celulares */
 @media (max-width: 480px) {
   .verificar-codigo {
     padding: 15px;
@@ -1067,12 +1038,12 @@ button {
   }
   
   .verificar-codigo .form-acesso input[type="text"] {
-    min-width: 60%; /* Garante espaço mínimo para o input */
+    min-width: 60%; 
     font-size: 14px;
   }
   
   .verificar-codigo .form-acesso button {
-    min-width: 35%; /* Proporção adequada para mobile */
+    min-width: 35%; 
     padding: 10px 8px;
     font-size: 14px;
   }
@@ -1080,6 +1051,6 @@ button {
 
 @media (max-width: 360px) {
   .verificar-codigo .form-acesso button {
-    min-width: 90px; /* Largura mínima absoluta */
+    min-width: 90px;
   }
 }

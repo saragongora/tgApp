@@ -86,10 +86,10 @@
           onclick="adicionarItem('orientadorInput', 'orientadoresContainer')">+</button>
       </div>
 
-      <!-- Tooltip entra aqui -->
+      
       <div class="tooltip" id="tooltipOrientador">⚠ Nome digitado, mas não adicionado. Clique no "+" para salvar o nome.</div>
 
-      <!-- Lista de orientadores -->
+      
       <div id="orientadoresContainer">
         <% registro.orientadores.forEach((orientador)=> { %>
           <div class="orientador-item">
@@ -133,8 +133,6 @@
           </strong></p>
         <% } %>
 
-
-          <!-- Campos ocultos para enviar arrays -->
           <div id="inputsOcultos"></div>
 
           <div class="add-registro-form-buttons">

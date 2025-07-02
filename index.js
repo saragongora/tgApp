@@ -3,7 +3,7 @@ const path = require('path');
 const session = require('express-session');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
-const { pool, promisePool } = require('./models/db'); // Importação modificada
+const { pool, promisePool } = require('./models/db'); 
 const auth = require('./models/auth');
 
 const app = express();
@@ -17,7 +17,7 @@ app.use(session({
   secret: 'chave-super-secreta',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 2 * 60 * 60 * 1000 } // 2 horas
+  cookie: { maxAge: 2 * 60 * 60 * 1000 } 
 }));
 
 // Configurações do EJS
@@ -76,7 +76,6 @@ app.post('/login-email', async (req, res) => {
 
     await auth.sendVerificationCode(email);
 
-    // Alterado: Redireciona para verify-code com o email como query param
     return res.redirect(`/verify-code?email=${encodeURIComponent(email)}`);
 
   } catch (error) {
@@ -175,7 +174,6 @@ app.get('/painel', (req, res) => {
 });
 
 
-
 // Tela de adicionar novo registro
 app.get('/add-registro', (req, res) => {
   if (req.session.logado) {
@@ -213,7 +211,6 @@ app.post('/add-registro', upload.single('arquivo'), (req, res) => {
     const idTg = result.insertId;
     const errors = [];
 
-    // Processar alunos
     alunosArray.forEach(nome => {
       if (!nome.trim()) return;
       pool.query(`INSERT INTO aluno (nome_aluno) VALUES (?)`, [nome], (err, result) => {
@@ -228,7 +225,6 @@ app.post('/add-registro', upload.single('arquivo'), (req, res) => {
       });
     });
 
-    // Processar orientadores
     orientadoresArray.forEach(nome => {
       if (!nome.trim()) return;
       const idOrientador = uuidv4();
@@ -364,7 +360,7 @@ app.get('/buscar', (req, res) => {
 });
 
 
-// Rota GET para carregar formulário de edição (atualizada)
+// Rota GET para carregar formulário de edição 
 app.get('/editar/:id', (req, res) => {
   const idTg = req.params.id;
 
@@ -381,7 +377,6 @@ app.get('/editar/:id', (req, res) => {
     GROUP BY tg.id_tg
   `;
 
-  // Alterado para usar pool.query em vez de db.query
   pool.query(query, [idTg], (err, results) => {
     if (err) return res.send('Erro ao carregar dados para edição: ' + err);
     if (results.length === 0) return res.send('Registro não encontrado');
@@ -394,7 +389,7 @@ app.get('/editar/:id', (req, res) => {
   });
 });
 
-// Rota POST para processar edição (atualizada)
+// Rota POST para processar edição 
 app.post('/editar/:id', upload.single('arquivo'), async (req, res) => {
   const idTg = req.params.id;
   const {
@@ -412,7 +407,6 @@ app.post('/editar/:id', upload.single('arquivo'), async (req, res) => {
   const arquivo = req.file ? req.file.buffer : null;
   const nomeArquivo = req.file ? req.file.originalname : null;
 
-  // Função helper para usar com pool (não precisa mais do promisePool aqui)
   const queryPromise = (query, params = []) => {
     return new Promise((resolve, reject) => {
       pool.query(query, params, (err, result) => {
@@ -423,7 +417,7 @@ app.post('/editar/:id', upload.single('arquivo'), async (req, res) => {
   };
 
   try {
-    // Atualiza TG
+  
     const updateSql = `
       UPDATE tg SET tipo = ?, nome_tg = ?, curso = ?, ano = ?, semestre = ?
       ${arquivo ? ', arquivo = ?, nome_arquivo = ?' : ''}
@@ -435,11 +429,11 @@ app.post('/editar/:id', upload.single('arquivo'), async (req, res) => {
 
     await queryPromise(updateSql, updateValues);
 
-    // Limpa antigos vínculos
+  
     await queryPromise(`DELETE FROM aluno_tg WHERE id_tg = ?`, [idTg]);
     await queryPromise(`DELETE FROM orientador_tg WHERE id_tg = ?`, [idTg]);
 
-    // Adiciona alunos novamente
+  
     for (const nome of alunosArray) {
       if (!nome.trim()) continue;
 
@@ -456,7 +450,7 @@ app.post('/editar/:id', upload.single('arquivo'), async (req, res) => {
       await queryPromise(`INSERT INTO aluno_tg (id_aluno, id_tg) VALUES (?, ?)`, [idAluno, idTg]);
     }
 
-    // Adiciona orientadores novamente
+
     for (const nome of orientadoresArray) {
       if (!nome.trim()) continue;
 
@@ -473,7 +467,7 @@ app.post('/editar/:id', upload.single('arquivo'), async (req, res) => {
       await queryPromise(`INSERT INTO orientador_tg (id_orientador, id_tg) VALUES (?, ?)`, [idOrientador, idTg]);
     }
 
-    // Remove os órfãos
+
     await queryPromise(`DELETE FROM aluno WHERE id_aluno NOT IN (SELECT DISTINCT id_aluno FROM aluno_tg)`);
     await queryPromise(`DELETE FROM orientador WHERE id_orientador NOT IN (SELECT DISTINCT id_orientador FROM orientador_tg)`);
 
@@ -485,7 +479,7 @@ app.post('/editar/:id', upload.single('arquivo'), async (req, res) => {
 });
 
 
-// Versão melhorada excluir
+
 app.post('/excluir/:id', async (req, res) => {
   const idTg = req.params.id;
   let connection;
@@ -510,11 +504,11 @@ app.post('/excluir/:id', async (req, res) => {
 });
 
 
-// Filtrar com paginação (versão corrigida)
+// Filtrar com paginação 
 app.get('/filtro', (req, res) => {
   const { termo, ano_conclusao, semestre, curso, tipo_trabalho } = req.query;
   const page = parseInt(req.query.page) || 1;
-  const limit = 5; // 5 resultados por página
+  const limit = 5; 
   const offset = (page - 1) * limit;
 
   const view = req.session.logado ? 'pagina_adm' : 'home';
@@ -530,7 +524,7 @@ app.get('/filtro', (req, res) => {
     WHERE 1=1
   `;
 
-  // Query para buscar os resultados (com paginação)
+  // Query para buscar os resultados 
   let dataQuery = `
     SELECT tg.*, 
            GROUP_CONCAT(DISTINCT aluno.nome_aluno SEPARATOR ', ') AS alunos, 
@@ -546,7 +540,7 @@ app.get('/filtro', (req, res) => {
   const params = [];
   const countParams = [];
 
-  // Construção das condições WHERE (mantido igual)
+
   if (termo) {
     const termoLike = `%${termo}%`;
     const whereClause = `
@@ -593,7 +587,7 @@ app.get('/filtro', (req, res) => {
   dataQuery += ' GROUP BY tg.id_tg ORDER BY tg.ano DESC, tg.semestre DESC LIMIT ? OFFSET ?';
   params.push(limit, offset);
 
-  // Primeiro executa a contagem total (usando pool.query)
+
   pool.query(countQuery, countParams, (err, countResults) => {
     if (err) {
       console.error('Erro ao contar registros:', err);
@@ -603,7 +597,7 @@ app.get('/filtro', (req, res) => {
     const total = countResults[0].total;
     const totalPages = Math.ceil(total / limit);
 
-    // Depois busca os resultados paginados (usando pool.query)
+
     pool.query(dataQuery, params, (err, results) => {
       if (err) {
         console.error('Erro ao buscar registros:', err);
@@ -636,7 +630,7 @@ app.get('/filtro', (req, res) => {
   });
 });
 
-// Página pública (protegida por verificação de email)
+
 app.get('/home', checkAuth, (req, res) => {
   res.render('home', {
     resultados: [],
@@ -650,8 +644,6 @@ app.get('/home', checkAuth, (req, res) => {
 });
 
 
-// Rotas de download (mantidas com callbacks)
-// Rota de download (usando pool com callbacks)
 app.get('/download/:id', (req, res) => {
   const idTg = req.params.id;
 
